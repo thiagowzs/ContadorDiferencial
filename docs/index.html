@@ -1,0 +1,1238 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contador Diferencial</title>
+<style>
+/* ── variáveis ─────────────────────────────────────────── */
+:root {
+  --fundo: #f3f5f9;
+  --fundo-brilho: #e6ecfb;
+  --superficie: #ffffff;
+  --superficie-2: #f7f9fc;
+  --texto: #161a22;
+  --suave: #5b6372;
+  --borda: #dfe4ec;
+  --primaria: #2f5fe0;
+  --primaria-forte: #2149bd;
+  --primaria-texto: #ffffff;
+  --primaria-suave: #e8eefc;
+  --contagem: #b4235a;
+  --contagem-suave: #fbe7ef;
+  --certo: #1c7543;
+  --certo-fundo: #e3f3e8;
+  --erro: #b42318;
+  --erro-fundo: #fbe8e6;
+  --aviso: #7a5100;
+  --aviso-fundo: #fcf1d6;
+  --raio: 18px;
+  --raio-botao: 14px;
+  --sombra: 0 1px 2px rgba(16,24,40,.05), 0 6px 20px rgba(16,24,40,.06);
+  --sombra-alta: 0 2px 4px rgba(16,24,40,.06), 0 14px 32px rgba(16,24,40,.12);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fundo: #0e1015; --fundo-brilho: #172036;
+    --superficie: #181b22; --superficie-2: #1e222b;
+    --texto: #e8eaee; --suave: #9ca3ae; --borda: #2b303a;
+    --primaria: #7ea3ff; --primaria-forte: #a3bdff;
+    --primaria-texto: #0b1020; --primaria-suave: #1c2744;
+    --contagem: #f17aa6; --contagem-suave: #3a1626;
+    --certo: #62d394; --certo-fundo: #142c1d;
+    --erro: #ff8b7b; --erro-fundo: #3a1916;
+    --aviso: #f1c35d; --aviso-fundo: #332811;
+    --sombra: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+    --sombra-alta: 0 2px 4px rgba(0,0,0,.35), 0 16px 36px rgba(0,0,0,.4);
+    color-scheme: dark;
+  }
+}
+/* ── reset e base ──────────────────────────────────────── */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(1200px 520px at 50% -180px, var(--fundo-brilho), transparent 70%) no-repeat, var(--fundo);
+  color: var(--texto);
+  font: 17px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: max(20px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right))
+    max(72px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));
+}
+main.largo { max-width: 1080px; }
+h1 { font-size: 1.85rem; line-height: 1.2; letter-spacing: -.015em; font-weight: 800; margin: 6px 0 20px; }
+h2 { font-size: 1.2rem; letter-spacing: -.01em; margin: 0 0 8px; }
+p { margin: 0 0 12px; }
+a { color: var(--primaria); }
+.suave { color: var(--suave); }
+.pequeno { font-size: .86rem; }
+.carregando { color: var(--suave); text-align: center; padding: 64px 0; }
+.icone { width: 1.5em; height: 1.5em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+/* ── cartões ───────────────────────────────────────────── */
+.cartao {
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra);
+  padding: 20px;
+  margin: 0 0 18px;
+}
+.cartao.destaque { background: linear-gradient(160deg, var(--primaria-suave), var(--superficie) 60%); }
+.cartao.aviso { background: var(--aviso-fundo); color: var(--aviso); border-color: transparent; box-shadow: none; }
+.cartao.aviso ul { margin: 8px 0; padding-left: 20px; }
+/* ── botões ────────────────────────────────────────────── */
+button, .botao {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 52px; padding: 12px 22px;
+  border: 1px solid var(--borda); border-radius: var(--raio-botao);
+  background: var(--superficie); color: var(--texto);
+  font: inherit; font-weight: 600; text-decoration: none; cursor: pointer;
+  transition: transform .12s ease, box-shadow .15s ease, background-color .15s, border-color .15s;
+}
+button:hover:not(:disabled), .botao:hover { border-color: color-mix(in srgb, var(--primaria) 45%, var(--borda)); box-shadow: 0 2px 8px rgba(16,24,40,.08); }
+button:active:not(:disabled), .botao:active { transform: translateY(1px) scale(.99); }
+button.primario, .botao.primario {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--primaria) 88%, white), var(--primaria));
+  border-color: var(--primaria); color: var(--primaria-texto); font-weight: 700;
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--primaria) 30%, transparent);
+}
+button.primario:hover:not(:disabled) { background: var(--primaria-forte); border-color: var(--primaria-forte); box-shadow: 0 6px 18px color-mix(in srgb, var(--primaria) 38%, transparent); }
+button.grande, .botao.grande { min-height: 60px; padding: 14px 30px; font-size: 1.12rem; border-radius: 16px; }
+button.discreto { min-height: 44px; border-color: transparent; background: none; color: var(--suave); font-size: .95rem; font-weight: 500; box-shadow: none; }
+button.discreto:hover:not(:disabled) { color: var(--texto); background: var(--superficie-2); }
+button:disabled { opacity: .45; cursor: default; }
+button:focus-visible, .botao:focus-visible { outline: 3px solid var(--primaria); outline-offset: 2px; }
+kbd {
+  display: inline-grid; place-items: center;
+  min-width: 22px; height: 22px; padding: 0 5px;
+  border: 1px solid var(--borda); border-bottom-width: 2px; border-radius: 6px;
+  background: var(--superficie-2); color: var(--suave);
+  font: 700 .72rem/1 ui-monospace, Consolas, monospace;
+}
+/* ── layout ────────────────────────────────────────────── */
+.linha { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.linha.entre { justify-content: space-between; }
+.acoes { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 0 0 18px; }
+.barra-topo {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 0 8px; gap: 12px;
+}
+.barra-topo a { text-decoration: none; padding: 8px 0; font-weight: 600; }
+.barra-topo a.voltar {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 14px; border: 1px solid var(--borda); border-radius: 12px;
+  color: var(--suave); font-size: .95rem;
+}
+.barra-topo a.voltar:hover { border-color: var(--primaria); color: var(--primaria); }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 12px 6px; border-bottom: 1px solid var(--borda); text-align: left; vertical-align: middle; font-size: .93rem; }
+th { font-size: .8rem; color: var(--suave); font-weight: 650; }
+td:last-child, th:last-child { text-align: right; white-space: nowrap; }
+/* ── toast ─────────────────────────────────────────────── */
+.toast {
+  position: fixed; z-index: 90; left: 50%;
+  bottom: max(24px, calc(env(safe-area-inset-bottom) + 8px));
+  transform: translateX(-50%);
+  max-width: min(560px, calc(100% - 32px));
+  padding: 14px 20px; border-radius: 14px;
+  background: var(--texto); color: var(--fundo);
+  font-size: .95rem; font-weight: 500; box-shadow: var(--sombra-alta);
+  animation: toast-sobe .25s ease-out both;
+}
+@keyframes toast-sobe { from { opacity: 0; transform: translate(-50%, 12px); } }
+/* ── sobreposição ──────────────────────────────────────── */
+body.sem-rolar { overflow: hidden; }
+.sobreposicao {
+  position: fixed; inset: 0; z-index: 80;
+  display: grid; place-items: center; padding: 16px; overflow-y: auto;
+  background: rgba(8,10,14,.86); backdrop-filter: blur(3px);
+  color: #e8ebf0; animation: aparece .25s ease-out both;
+}
+@keyframes aparece { from { opacity: 0; } }
+.sobreposicao button { border-color: #3a404b; background: rgba(255,255,255,.06); color: #e8ebf0; }
+.sobreposicao button.discreto { border-color: transparent; background: none; color: #9aa3b2; }
+.sobreposicao button.primario { border-color: var(--primaria); background: var(--primaria); color: var(--primaria-texto); }
+/* ── bolinha ───────────────────────────────────────────── */
+.bolinha { display: inline-block; flex: none; width: 10px; height: 10px; border-radius: 50%; }
+
+/* ══════════════════════════════════════════════════════════
+   CONTAGEM DE CÉLULAS
+   ══════════════════════════════════════════════════════════ */
+/* ── opções ────────────────────────────────────────────── */
+.previa-teclas { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 12px; margin: 14px 0 12px; }
+.previa-tecla {
+  position: relative; display: flex; flex-direction: column; align-items: center;
+  gap: 2px; padding: 12px 10px 10px;
+  border: 1px solid var(--borda); border-top: 5px solid var(--tecla); border-radius: 14px;
+  background: var(--superficie); text-align: center;
+}
+.previa-tecla img { width: 76px; height: 76px; margin-bottom: 6px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 3px color-mix(in srgb, var(--tecla) 25%, transparent); }
+.previa-tecla strong { font-size: .92rem; line-height: 1.25; }
+.previa-tecla kbd { position: absolute; top: 8px; right: 8px; }
+.previa-tecla kbd[hidden] { display: none; }
+.escolhas { display: flex; flex-wrap: wrap; gap: 10px; }
+.escolha-item { flex-direction: column; align-items: flex-start; gap: 0; min-width: 88px; min-height: 60px; padding: 10px 18px; text-align: left; }
+.escolha-item span { font-size: .82rem; font-weight: 500; color: var(--suave); }
+.escolha-item.ativa { border-color: var(--primaria); background: var(--primaria-suave); box-shadow: 0 0 0 2px color-mix(in srgb, var(--primaria) 30%, transparent); }
+.escolha-item.ativa strong { color: var(--primaria); }
+.espaco-acima { margin-top: 22px; }
+.largo-total { width: 100%; margin-top: 22px; }
+.largo-total:disabled { opacity: .5; cursor: not-allowed; }
+.quantas-manual { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 14px; font-weight: 600; }
+.campo-quantas {
+  width: 140px; min-height: 52px; padding: 0 14px;
+  border: 1px solid var(--borda); border-radius: 12px;
+  background: var(--superficie); color: var(--texto);
+  font: inherit; font-size: 1.25rem; font-weight: 700; font-variant-numeric: tabular-nums;
+}
+.campo-quantas:focus { outline: 3px solid color-mix(in srgb, var(--primaria) 55%, transparent); outline-offset: 0; border-color: var(--primaria); }
+.erro-quantas { min-height: 1.4em; margin: 6px 0 0; color: var(--erro); font-size: .9rem; font-weight: 600; }
+.idiomas { display: inline-flex; padding: 3px; border: 1px solid var(--borda); border-radius: 999px; background: var(--superficie); }
+.idiomas button { min-height: 38px; padding: 0 14px; border: 0; border-radius: 999px; background: none; color: var(--suave); font-size: .88rem; box-shadow: none; }
+.idiomas button:hover:not(.ativo) { color: var(--texto); background: var(--superficie-2); box-shadow: none; }
+.idiomas button.ativo { background: var(--primaria); color: var(--primaria-texto); }
+.caixa-teclas { width: min(480px, 100%); padding: 22px 24px 18px; border-radius: 20px; background: var(--superficie); color: var(--texto); box-shadow: 0 24px 70px rgba(0,0,0,.45); }
+.caixa-teclas h2 { margin: 0 0 6px; }
+.caixa-teclas > p { margin: 0 0 14px; }
+.sobreposicao.janela-teclas button { border-color: var(--borda); background: var(--superficie); color: var(--texto); }
+.sobreposicao.janela-teclas button.discreto { border-color: transparent; background: none; color: var(--suave); }
+.sobreposicao.janela-teclas button.primario { border-color: var(--primaria); background: var(--primaria); color: var(--primaria-texto); }
+.lista-teclas { display: flex; flex-direction: column; margin-bottom: 10px; }
+.linha-tecla { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--borda); }
+.linha-tecla:last-child { border-bottom: 0; }
+.linha-tecla .nome-celula { flex: 1; font-weight: 600; }
+.sobreposicao.janela-teclas .botao-tecla { min-width: 76px; min-height: 44px; padding: 6px 14px; }
+.botao-tecla kbd { min-width: 30px; height: 30px; font-size: .9rem; color: var(--texto); }
+.sobreposicao.janela-teclas .botao-tecla.esperando { border-color: var(--primaria); background: var(--primaria-suave); color: var(--primaria); font-size: .88rem; animation: esperando-tecla 1s ease-in-out infinite alternate; }
+@keyframes esperando-tecla { to { box-shadow: 0 0 0 4px color-mix(in srgb, var(--primaria) 25%, transparent); } }
+.aviso-tecla { min-height: 1.4em; margin: 0 0 6px; color: var(--primaria); font-size: .9rem; font-weight: 600; }
+.arvore { padding: 12px 16px; border-radius: 12px; background: var(--superficie-2); font-size: .9rem; }
+/* ── esteira ───────────────────────────────────────────── */
+.bancada-contagem { display: flex; flex-direction: column; gap: 18px; margin-top: 16px; }
+.campo-contagem {
+  --slot: 210px;
+  position: relative; height: 280px; overflow: hidden; border-radius: 28px;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(214,120,140,.18) 0 16px, transparent 17px),
+    radial-gradient(circle at 70% 70%, rgba(214,120,140,.14) 0 14px, transparent 15px),
+    radial-gradient(circle at 45% 85%, rgba(214,120,140,.12) 0 12px, transparent 13px),
+    linear-gradient(180deg, #fbeef0, #f6e1e6);
+  background-size: 120px 110px, 150px 130px, 90px 100px, auto;
+  box-shadow: inset 0 0 0 1px rgba(150,90,110,.2), inset 0 10px 30px rgba(120,60,80,.12);
+}
+.fita-celulas { display: flex; height: 100%; transition: transform .38s cubic-bezier(.3,.7,.3,1); will-change: transform; }
+.fita-celulas.sem-transicao { transition: none; }
+.slot-celula { display: grid; flex: none; place-items: center; width: var(--slot); height: 100%; }
+.slot-celula img {
+  width: 150px; height: 150px; border-radius: 50%; object-fit: cover;
+  background: rgba(255,255,255,.5); opacity: .45; transform: scale(.72);
+  transition: transform .38s cubic-bezier(.3,.7,.3,1), opacity .3s, filter .3s;
+  user-select: none;
+}
+.slot-celula img:not([src]) { visibility: hidden; }
+.slot-celula.atual img { opacity: 1; transform: scale(1.38); box-shadow: 0 10px 30px rgba(80,30,50,.25); }
+.slot-celula.passou img { opacity: .25; filter: grayscale(.4); }
+.slot-celula.contada img { box-shadow: 0 0 0 5px var(--marca, transparent); }
+.slot-celula.perdida img { box-shadow: 0 0 0 5px #9aa3b2; filter: grayscale(1); }
+.ocular-contagem {
+  position: absolute; top: 50%; left: 50%; width: 236px; height: 236px;
+  border: 3px solid rgba(40,30,50,.55); border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 9999px rgba(40,20,35,.14); pointer-events: none;
+}
+.ocular-contagem::before, .ocular-contagem::after { content: ""; position: absolute; background: rgba(40,30,50,.4); }
+.ocular-contagem::before { left: 50%; top: -14px; width: 2px; height: 22px; transform: translateX(-50%); }
+.ocular-contagem::after { top: 50%; left: -14px; width: 22px; height: 2px; transform: translateY(-50%); }
+.tempo-celula { position: absolute; left: 50%; bottom: 14px; width: 200px; height: 6px; overflow: hidden; border-radius: 3px; background: rgba(40,30,50,.15); transform: translateX(-50%); }
+.tempo-celula span { display: block; height: 100%; background: #b4235a; transform-origin: left; }
+.campo-contagem.terminou .ocular-contagem { border-color: var(--certo); animation: anel-fim .6s ease-out; }
+@keyframes anel-fim { 50% { transform: translate(-50%, -50%) scale(1.12); } }
+/* ── pianinho ──────────────────────────────────────────── */
+.pianinho {
+  padding: 16px 18px 20px; border-radius: 24px;
+  background: linear-gradient(180deg, #3a3f4b, #23262e);
+  box-shadow: 0 2px 0 #4d5361 inset, 0 14px 30px rgba(10,12,20,.3);
+  color: #e8ebf0;
+}
+.painel-pianinho { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 14px; }
+.total-pianinho { display: flex; align-items: center; gap: 10px; }
+.rotulo-visor { font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #9aa3b2; }
+.visor-total, .visor-tecla {
+  padding: 4px 10px; border-radius: 8px;
+  background: #0b0d10;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,.8), 0 1px 0 rgba(255,255,255,.08);
+  color: #f5f7fa;
+  font: 700 1.6rem/1.1 ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-variant-numeric: tabular-nums; letter-spacing: .08em;
+}
+.pianinho .discreto { color: #c9ced8; }
+.pianinho .discreto:hover:not(:disabled) { background: rgba(255,255,255,.08); color: #fff; }
+.teclas { display: grid; grid-template-columns: repeat(auto-fit, minmax(126px, 1fr)); gap: 12px; }
+.tecla {
+  flex-direction: column; gap: 8px; min-height: 0; padding: 10px 8px 0;
+  border: 0; border-radius: 16px; background: #2c3039;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.07); color: inherit;
+}
+.tecla:hover:not(:disabled) { border: 0; box-shadow: inset 0 1px 0 rgba(255,255,255,.07); background: #323743; }
+.tecla .visor-tecla { min-width: 58px; font-size: 1.25rem; text-align: center; }
+.tampo-tecla {
+  position: relative; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 6px; flex: 1; width: 100%; min-height: 92px;
+  padding: 12px 8px 14px; border-radius: 12px 12px 14px 14px;
+  border-top: 6px solid var(--tecla);
+  background: linear-gradient(180deg, #fbfaf6, #e9e5db);
+  box-shadow: 0 6px 0 #b9b3a4, 0 8px 12px rgba(0,0,0,.35);
+  color: #1d2028; transform: translateY(-6px);
+  transition: transform .07s, box-shadow .07s;
+}
+.nome-tecla { max-width: 100%; font-size: .95rem; font-weight: 750; line-height: 1.2; text-align: center; }
+.nome-tecla.longo { font-size: .8rem; letter-spacing: -.01em; }
+.tampo-tecla kbd { border-color: #cfc8b8; background: #f3efe5; color: #6b6555; }
+.tecla:active .tampo-tecla { transform: translateY(0); box-shadow: 0 0 0 #b9b3a4, 0 2px 4px rgba(0,0,0,.35); }
+.tecla.apertada .tampo-tecla { animation: tecla-aperta .2s ease-out; }
+@keyframes tecla-aperta { 35% { transform: translateY(0); box-shadow: 0 0 0 #b9b3a4, 0 2px 4px rgba(0,0,0,.35); } }
+.tecla.apertada .visor-tecla { animation: visor-pisca .3s ease-out; }
+@keyframes visor-pisca { from { color: var(--tecla); text-shadow: 0 0 10px var(--tecla); } }
+.dica-contagem { margin: 0; text-align: center; }
+/* ── resultado ─────────────────────────────────────────── */
+.placar-contagem { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+.placar-contagem strong { font-size: 3rem; line-height: 1; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.placar-contagem span { color: var(--suave); }
+.resultado-contagem.ok .placar-contagem strong { color: var(--certo); }
+.resultado-contagem.medio .placar-contagem strong { color: var(--aviso); }
+.resultado-contagem.erro .placar-contagem strong { color: var(--erro); }
+.coluna-barras { width: 34%; }
+.barra-contagem { display: block; height: 8px; margin: 2px 0; border-radius: 4px; background: var(--tecla); }
+.barra-contagem.real { opacity: .35; }
+.diferenca { display: inline-block; min-width: 52px; padding: 2px 8px; border-radius: 999px; background: var(--erro-fundo); color: var(--erro); font-weight: 700; font-variant-numeric: tabular-nums; text-align: center; }
+.diferenca.igual { background: var(--certo-fundo); color: var(--certo); }
+.trocas { margin: 0; padding: 0; list-style: none; }
+.trocas li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 10px 0; border-bottom: 1px solid var(--borda); }
+.trocas li:last-child { border-bottom: 0; }
+.trocas .vezes { margin-left: auto; padding: 2px 10px; border-radius: 999px; background: var(--superficie-2); font-weight: 700; }
+.galeria-erros { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 14px; }
+.galeria-erros figure { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 0; text-align: center; }
+.galeria-erros img { width: 112px; height: 112px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 3px var(--borda); }
+.galeria-erros figcaption { display: flex; flex-direction: column; font-size: .85rem; line-height: 1.3; }
+.galeria-erros figcaption span { color: var(--erro); }
+@media (max-width: 640px) {
+  .campo-contagem { --slot: 150px; height: 220px; }
+  .slot-celula img { width: 110px; height: 110px; }
+  .ocular-contagem { width: 176px; height: 176px; }
+  .teclas { grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); }
+  .tampo-tecla { min-height: 76px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fita-celulas, .slot-celula img, .tampo-tecla { transition: none; }
+  .tecla.apertada .tampo-tecla, .tecla.apertada .visor-tecla,
+  .campo-contagem.terminou .ocular-contagem,
+  .sobreposicao.janela-teclas .botao-tecla.esperando { animation: none; }
+  .toast { animation: none; }
+}
+</style>
+</head>
+<body>
+<main id="app"><p class="carregando">Carregando…</p></main>
+<script>
+"use strict";
+
+// ══════════════════════════════════════════════════════════
+// UTILITÁRIOS
+// ══════════════════════════════════════════════════════════
+
+const app = document.getElementById("app");
+
+const SEM_ANIMACAO = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const pausa = (ms) => new Promise((ok) => setTimeout(ok, ms));
+const faixaDaNota = (nota) => (nota >= 80 ? "ok" : nota >= 50 ? "medio" : "erro");
+
+function el(tag, props, ...filhos) {
+  const no = document.createElement(tag);
+  for (const [k, v] of Object.entries(props || {})) {
+    if (v === null || v === undefined) continue;
+    if (k.startsWith("on")) no.addEventListener(k.slice(2), v);
+    else no.setAttribute(k, v);
+  }
+  no.append(...filhos.flat(Infinity).filter((f) => f != null));
+  return no;
+}
+
+function tela(...nos) {
+  app.replaceChildren(...nos.filter(Boolean));
+}
+
+function cabecalho(titulo, direita = null, volta = null) {
+  const esq = el("div", { class: "linha", style: "gap: 6px" },
+    volta ? el("a", { class: "voltar", href: volta.href }, `← ${volta.texto}`) : null,
+    el("h1", { style: "margin: 0; font-size: 1.35rem" }, titulo));
+  return el("div", { class: "barra-topo" }, esq, direita || el("span", {}));
+}
+
+function toast(texto) {
+  const t = el("div", { class: "toast" }, texto);
+  document.body.append(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+function mostrarErro(e) {
+  tela(el("div", { class: "cartao aviso", style: "margin-top: 32px" },
+    el("strong", {}, "Erro ao carregar"), el("p", {}, String(e.message || e))));
+}
+
+function pct(acertos, total) {
+  return total ? Math.round(100 * acertos / total) : 0;
+}
+
+const ICONES = {
+  teclado: ["M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z",
+    "M6 10h.01", "M10 10h.01", "M14 10h.01", "M18 10h.01", "M8 14h8"],
+};
+function icone(nome) {
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("class", `icone icone-${nome}`);
+  for (const d of ICONES[nome]) {
+    const p = document.createElementNS(ns, "path");
+    p.setAttribute("d", d);
+    svg.append(p);
+  }
+  return svg;
+}
+
+function contar(no, ate, sufixo = "") {
+  const inicio = Date.now();
+  const DURACAO = 800;
+  if (SEM_ANIMACAO) { no.textContent = `${Math.round(ate)}${sufixo}`; return; }
+  const passo = () => {
+    const progresso = Math.min(1, (Date.now() - inicio) / DURACAO);
+    const ease = 1 - Math.pow(1 - progresso, 3);
+    no.textContent = `${Math.round(ate * ease)}${sufixo}`;
+    if (progresso < 1) requestAnimationFrame(passo);
+  };
+  requestAnimationFrame(passo);
+}
+
+let aoSair = null;
+
+function abrirSobreposicao(classe, rotulo, caixa, teclas = () => false) {
+  const anterior = document.activeElement;
+  let aberta = true;
+  const fundo = el("div", {
+    class: `sobreposicao ${classe}`, role: "dialog", "aria-modal": "true", "aria-label": rotulo,
+    onclick: (e) => { if (e.target === fundo) fechar(); },
+  }, caixa);
+  function aoTecla(e) {
+    if (e.key === "Escape") fechar();
+    else if (!teclas(e)) return;
+    e.preventDefault(); e.stopPropagation();
+  }
+  function fechar() {
+    if (!aberta) return;
+    aberta = false;
+    fundo.remove();
+    document.removeEventListener("keydown", aoTecla, true);
+    document.body.classList.remove("sem-rolar");
+    if (anterior?.isConnected) anterior.focus({ preventScroll: true });
+  }
+  document.addEventListener("keydown", aoTecla, true);
+  document.body.classList.add("sem-rolar");
+  document.body.append(fundo);
+  aoSair = fechar;
+  return fechar;
+}
+
+// ══════════════════════════════════════════════════════════
+// LÓGICA LOCAL (portada do Python)
+// ══════════════════════════════════════════════════════════
+
+let _banco = null; // carregado uma vez, reutilizado
+
+async function carregarBanco() {
+  if (_banco) return _banco;
+  const resp = await fetch("banco.json");
+  if (!resp.ok) throw new Error(`banco.json: ${resp.status} ${resp.statusText}`);
+  _banco = await resp.json();
+  return _banco;
+}
+
+function _faixaEmCelulas(referencia, n) {
+  const [minPct, maxPct] = referencia;
+  const minF = minPct * n / 100;
+  const maxF = maxPct * n / 100;
+  const justa = [Math.ceil(minF - 1e-9), Math.floor(maxF + 1e-9)];
+  if (justa[0] <= justa[1]) return justa;
+  return [Math.floor(minF + 1e-9), Math.ceil(maxF - 1e-9)];
+}
+
+function _randInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function _shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function sortearRodadaLocal(banco, n) {
+  const tipos = banco.tipos;
+  if (!tipos.length) return { celulas: [] };
+
+  const comReferencia = tipos.every((t) => t.referencia);
+  let escolhidos; // [tipo, ...]
+
+  if (comReferencia) {
+    const faixas = {};
+    for (const t of tipos) faixas[t.nome] = _faixaEmCelulas(t.referencia, n);
+    const ordem = _shuffle(tipos.map((t) => t.nome));
+    const quantas = {};
+    let sobra = n;
+    for (let i = 0; i < ordem.length; i++) {
+      const nome = ordem[i];
+      const depois = ordem.slice(i + 1);
+      const minLivre = sobra - depois.reduce((s, d) => s + faixas[d][1], 0);
+      const maxLivre = sobra - depois.reduce((s, d) => s + faixas[d][0], 0);
+      const min = Math.max(faixas[nome][0], minLivre);
+      const max = Math.min(faixas[nome][1], maxLivre);
+      quantas[nome] = _randInt(min, max);
+      sobra -= quantas[nome];
+    }
+    escolhidos = tipos.flatMap((t) => Array(quantas[t.nome]).fill(t));
+    _shuffle(escolhidos);
+  } else {
+    const pesos = tipos.map(() => Math.pow(Math.random(), 1.5) + 0.05);
+    const total = pesos.reduce((s, p) => s + p, 0);
+    escolhidos = [];
+    for (let i = 0; i < n; i++) {
+      let r = Math.random() * total, j = 0;
+      while (j < tipos.length - 1 && r > pesos[j]) { r -= pesos[j]; j++; }
+      escolhidos.push(tipos[j]);
+    }
+  }
+
+  // Dentro de cada tipo: embaralha a lista de códigos e usa como fila circular.
+  const filas = {};
+  const rodada = [];
+  for (const tipo of escolhidos) {
+    if (!filas[tipo.nome]) filas[tipo.nome] = _shuffle([...tipo.codigos]);
+    const fila = filas[tipo.nome];
+    rodada.push(fila.pop() ?? tipo.codigos[0]);
+  }
+
+  const ext = Object.fromEntries(tipos.map((t) => [t.nome, t.ext]));
+  return {
+    celulas: rodada.map((cod) => ({
+      codigo: cod,
+      url: `celulas/${cod}${ext[banco.por_codigo[cod]] || ".jpg"}`,
+    })),
+  };
+}
+
+function corrigirContagemLocal(banco, respostas) {
+  const nomes = banco.tipos.map((t) => t.nome);
+  const itens = respostas.map((r) => {
+    const real = banco.por_codigo[r.codigo];
+    if (!real) throw new Error(`código desconhecido: ${r.codigo}`);
+    if (r.contou !== null && !nomes.includes(r.contou)) throw new Error(`célula desconhecida: ${r.contou}`);
+    return { codigo: r.codigo, real, contou: r.contou };
+  });
+  const total = itens.length;
+  const reais = {}, contados = {};
+  for (const nome of nomes) { reais[nome] = 0; contados[nome] = 0; }
+  for (const i of itens) { reais[i.real]++; if (i.contou) contados[i.contou]++; }
+  const trocasMap = {};
+  for (const i of itens) {
+    if (i.contou && i.contou !== i.real) {
+      const k = `${i.real}|||${i.contou}`;
+      trocasMap[k] = (trocasMap[k] || 0) + 1;
+    }
+  }
+  const pct2 = (k) => total ? Math.round(1000 * k / total) / 10 : 0;
+  return {
+    total,
+    certas: itens.filter((i) => i.contou === i.real).length,
+    nao_contadas: itens.filter((i) => i.contou === null).length,
+    tabela: nomes
+      .filter((n) => reais[n] || contados[n])
+      .map((n) => ({ celula: n, real: reais[n], contado: contados[n], real_pct: pct2(reais[n]), contado_pct: pct2(contados[n]) })),
+    trocas: Object.entries(trocasMap)
+      .map(([k, v]) => { const [a, b] = k.split("|||"); return { real: a, contou: b, vezes: v }; })
+      .sort((a, b) => b.vezes - a.vezes),
+    itens,
+  };
+}
+
+// ══════════════════════════════════════════════════════════
+// CONTAGEM DE CÉLULAS
+// (adaptado de contagem.js: api() substituído por funções locais)
+// ══════════════════════════════════════════════════════════
+
+const TECLAS_CONTAGEM = "1234567890qwertyuiop";
+const CHAVE_CONTAGEM = "contadordif.opcoes";
+const RITMOS = [
+  { id: "livre", segundos: 0 },
+  { id: "devagar", segundos: 3 },
+  { id: "medio", segundos: 2 },
+  { id: "rapido", segundos: 1.2 },
+];
+const CORES_TECLA = ["#2563eb","#e11d48","#16a34a","#d97706","#7c3aed","#0891b2","#db2777","#65a30d","#ea580c","#4f46e5"];
+const IDIOMAS = [{ id: "pt", nome: "PT-BR", lang: "pt-BR" }, { id: "en", nome: "English", lang: "en" }];
+
+const TEXTOS = {
+  pt: {
+    local: "pt-BR",
+    numero: (v) => String(v).replace(".", ","),
+    titulo: "Contador Diferencial",
+    contagem: "Contagem",
+    idioma: "Idioma",
+    nenhumaCelula: "Nenhuma célula ainda",
+    crieAsPastas: ["Coloque imagens em ", " e rode ", " para gerar o banco."],
+    arvore: "celulas/\n  Segmentado/\n    001.jpg\n  Linfócito/\n  Monócito/\n  Eosinófilo/\n  Basófilo/",
+    nomeDaPasta: "O nome da pasta vira o nome da tecla. Formatos: JPG, PNG, WebP, GIF ou BMP.",
+    comoFunciona: "As células passam uma de cada vez sob a ocular. Aperte a tecla de cada uma, como no contador de bancada. No fim, a porcentagem real aparece ao lado da que você contou.",
+    imagens: (n) => `${n.toLocaleString("pt-BR")} ${n === 1 ? "imagem" : "imagens"}`,
+    faixa: (min, max) => `${min}–${max}% no adulto`,
+    resumoTeclas: (celulas, imagens) => `${celulas} células, ${imagens}. `,
+    proporcaoReferencia: "A proporção muda a cada rodada, sempre dentro dos valores de referência do adulto.",
+    proporcaoAoAcaso: "A proporção de cada uma muda a cada rodada.",
+    configurarTeclas: "Configurar teclas",
+    quantasCelulas: "Quantas células",
+    outra: "Outra",
+    outraDetalhe: (min, max) => `de ${min} a ${max}`,
+    quantasManual: "Número de células",
+    foraDoLimite: (min, max) => `Escolha um número inteiro de ${min} a ${max}.`,
+    ritmo: "Ritmo",
+    ritmos: {
+      livre: ["No seu ritmo", "a próxima vem quando você conta"],
+      devagar: ["Esteira devagar", "3 s por célula"],
+      medio: ["Esteira média", "2 s por célula"],
+      rapido: ["Esteira rápida", "1,2 s por célula"],
+    },
+    comecar: (n) => `Começar a contar ${n} células`,
+    teclasTitulo: "Teclas do pianinho",
+    teclasComo: "Clique na tecla de uma célula e aperte no teclado a que você quer usar.",
+    teclasDica: "O Backspace desfaz na contagem. Esc fecha esta janela.",
+    aperteUmaTecla: "Aperte uma tecla…",
+    trocarTecla: (c, t) => `${c}: tecla ${t}. Clique para trocar`,
+    backspaceReservado: "O Backspace desfaz. Escolha outra tecla.",
+    teclaInvalida: "Use uma letra, um número, um símbolo ou o espaço.",
+    trocou: (c, t) => `As duas trocaram: ${c} ficou com a tecla ${t}.`,
+    restaurar: "Restaurar o padrão",
+    pronto: "Pronto",
+    espaco: "Espaço",
+    abandonar: "Abandonar a contagem?",
+    desfazer: "↶ Desfazer (Backspace)",
+    total: "Total",
+    de: (n) => `de ${n}`,
+    somLigado: "🔊 Som ligado",
+    somDesligado: "🔇 Som desligado",
+    dicaEsteira: (s) => `Esteira: cada célula fica ${s} s. A que passar sem tecla conta como não contada.`,
+    dicaLivre: "No seu ritmo: a próxima célula só chega depois que você conta esta.",
+    naoDeuCerto: (m) => `Não deu certo: ${m}`,
+    resultado: "Resultado da contagem",
+    contadasCerto: "das células contadas certo",
+    certas: (c, t) => `${c} de ${t} células na tecla certa`,
+    semContar: (n) => ` · ${n.toLocaleString("pt-BR")} ${n === 1 ? "passou" : "passaram"} sem contar`,
+    colunas: ["Célula", "Real", "Contado", "", "Diferença"],
+    legendaBarras: "Nas barras, a de cima é a real e a de baixo, a contada.",
+    trocas: "O que você trocou",
+    contadoComo: " contado como ",
+    erradas: (n) => (n === 1 ? "A que não foi na tecla certa" : `As ${n} que não foram na tecla certa`),
+    voceContou: (c) => `você contou ${c}`,
+    passouSemContar: "passou sem contar",
+    contarDeNovo: "Contar de novo",
+    mudarOpcoes: "Mudar as opções",
+  },
+  en: {
+    local: "en-US",
+    numero: (v) => String(v),
+    titulo: "Differential Counter",
+    contagem: "Cell count",
+    idioma: "Language",
+    nenhumaCelula: "No cells yet",
+    crieAsPastas: ["Put images in ", " and run ", " to build the bank."],
+    arvore: "celulas/\n  Segmented neutrophil/\n    001.jpg\n  Lymphocyte/\n  Monocyte/\n  Eosinophil/\n  Basophil/",
+    nomeDaPasta: "The folder name becomes the key name. Formats: JPG, PNG, WebP, GIF or BMP.",
+    comoFunciona: "Cells pass under the eyepiece one at a time. Press the key for each one, as on a bench counter. At the end, the actual percentage appears next to the one you counted.",
+    imagens: (n) => `${n.toLocaleString("en-US")} ${n === 1 ? "image" : "images"}`,
+    faixa: (min, max) => `${min}–${max}% in adults`,
+    resumoTeclas: (c, i) => `${c} cells, ${i}. `,
+    proporcaoReferencia: "Proportions change every round, always within adult reference ranges.",
+    proporcaoAoAcaso: "Each cell's proportion changes every round.",
+    configurarTeclas: "Set up keys",
+    quantasCelulas: "How many cells",
+    outra: "Custom",
+    outraDetalhe: (min, max) => `${min} to ${max}`,
+    quantasManual: "Number of cells",
+    foraDoLimite: (min, max) => `Pick a whole number from ${min} to ${max}.`,
+    ritmo: "Pace",
+    ritmos: {
+      livre: ["At your own pace", "the next one comes when you count"],
+      devagar: ["Slow conveyor", "3 s per cell"],
+      medio: ["Medium conveyor", "2 s per cell"],
+      rapido: ["Fast conveyor", "1.2 s per cell"],
+    },
+    comecar: (n) => `Start counting ${n} cells`,
+    teclasTitulo: "Counter keys",
+    teclasComo: "Click a cell's key, then press the key you want to use.",
+    teclasDica: "Backspace undoes while counting. Esc closes this window.",
+    aperteUmaTecla: "Press a key…",
+    trocarTecla: (c, t) => `${c}: key ${t}. Click to change`,
+    backspaceReservado: "Backspace undoes. Pick another key.",
+    teclaInvalida: "Use a letter, a number, a symbol or the space bar.",
+    trocou: (c, t) => `Swapped: ${c} now uses ${t}.`,
+    restaurar: "Restore defaults",
+    pronto: "Done",
+    espaco: "Space",
+    abandonar: "Abandon this count?",
+    desfazer: "↶ Undo (Backspace)",
+    total: "Total",
+    de: (n) => `of ${n}`,
+    somLigado: "🔊 Sound on",
+    somDesligado: "🔇 Sound off",
+    dicaEsteira: (s) => `Conveyor: each cell stays for ${s} s. A cell that passes without a key press counts as missed.`,
+    dicaLivre: "At your own pace: the next cell only arrives after you count this one.",
+    naoDeuCerto: (m) => `Something went wrong: ${m}`,
+    resultado: "Count results",
+    contadasCerto: "of cells counted correctly",
+    certas: (c, t) => `${c} of ${t} cells on the right key`,
+    semContar: (n) => ` · ${n.toLocaleString("en-US")} passed uncounted`,
+    colunas: ["Cell", "Actual", "Counted", "", "Difference"],
+    legendaBarras: "Top bar: actual value. Bottom bar: your count.",
+    trocas: "What you mixed up",
+    contadoComo: " counted as ",
+    erradas: (n) => (n === 1 ? "The one on the wrong key" : `The ${n} on the wrong key`),
+    voceContou: (c) => `you counted ${c}`,
+    passouSemContar: "passed uncounted",
+    contarDeNovo: "Count again",
+    mudarOpcoes: "Change options",
+  },
+};
+
+let txt = TEXTOS.pt;
+let nomesEmIngles = new Map();
+
+function prepararIdioma(opcoes, tipos) {
+  txt = TEXTOS[opcoes.idioma] || TEXTOS.pt;
+  nomesEmIngles = new Map(tipos.filter((t) => t.ingles).map((t) => [t.nome, t.ingles]));
+}
+
+function nomeDaCelula(nome) {
+  return txt === TEXTOS.en ? (nomesEmIngles.get(nome) || nome) : nome;
+}
+
+function seletorDeIdioma(atual, aoTrocar) {
+  return el("div", { class: "idiomas", role: "radiogroup", "aria-label": txt.idioma },
+    IDIOMAS.map((i) => el("button", {
+      type: "button", role: "radio", lang: i.lang,
+      class: i.id === atual ? "ativo" : null, "aria-checked": String(i.id === atual),
+      onclick: () => { if (i.id !== atual) aoTrocar(i.id); },
+    }, i.nome)));
+}
+
+function opcoesDaContagem() {
+  const padrao = { n: 100, ritmo: "livre", som: true, idioma: "pt", teclas: {} };
+  try {
+    const salvo = JSON.parse(localStorage.getItem(CHAVE_CONTAGEM));
+    if (salvo && typeof salvo === "object") return { ...padrao, ...salvo };
+  } catch {}
+  return padrao;
+}
+
+function guardarOpcoes(opcoes) {
+  try { localStorage.setItem(CHAVE_CONTAGEM, JSON.stringify(opcoes)); } catch {}
+}
+
+function teclaValida(tecla) {
+  return typeof tecla === "string" && tecla.length === 1;
+}
+
+function teclasDasCelulas(nomes, configuradas = {}) {
+  const teclas = new Map();
+  const usadas = new Set();
+  for (const nome of nomes) {
+    const tecla = configuradas[nome];
+    if (teclaValida(tecla) && !usadas.has(tecla)) { teclas.set(nome, tecla); usadas.add(tecla); }
+  }
+  const livres = [...TECLAS_CONTAGEM].filter((k) => !usadas.has(k));
+  for (const nome of nomes) if (!teclas.has(nome) && livres.length) teclas.set(nome, livres.shift());
+  return new Map(nomes.filter((n) => teclas.has(n)).map((n) => [n, teclas.get(n)]));
+}
+
+function rotuloDaTecla(tecla) {
+  return tecla === " " ? txt.espaco : tecla.toUpperCase();
+}
+
+function configurarTeclas(tipos, aoMudar) {
+  const nomes = tipos.map((t) => t.nome);
+  let teclas = teclasDasCelulas(nomes, opcoesDaContagem().teclas);
+  let esperando = null;
+  const aviso = el("p", { class: "aviso-tecla", role: "status" });
+
+  const linhas = tipos.map((t, i) => {
+    const botao = el("button", { type: "button", class: "botao-tecla",
+      onclick: () => esperar(esperando === t.nome ? null : t.nome) });
+    return { nome: t.nome, botao, linha: el("div", { class: "linha-tecla" },
+      el("span", { class: "bolinha", style: `background: ${CORES_TECLA[i % CORES_TECLA.length]}` }),
+      el("span", { class: "nome-celula" }, nomeDaCelula(t.nome)),
+      botao) };
+  });
+
+  function desenhar() {
+    for (const { nome, botao } of linhas) {
+      const tecla = teclas.get(nome);
+      const espera = esperando === nome;
+      botao.classList.toggle("esperando", espera);
+      botao.setAttribute("aria-label", espera ? txt.aperteUmaTecla : txt.trocarTecla(nomeDaCelula(nome), tecla ? rotuloDaTecla(tecla) : "—"));
+      botao.replaceChildren(espera ? txt.aperteUmaTecla : el("kbd", {}, tecla ? rotuloDaTecla(tecla) : "—"));
+    }
+  }
+
+  function esperar(nome) { esperando = nome; aviso.textContent = ""; desenhar(); }
+
+  function guardar() {
+    guardarOpcoes({ ...opcoesDaContagem(), teclas: Object.fromEntries(teclas) });
+    desenhar(); aoMudar(teclas);
+  }
+
+  function aoTecla(e) {
+    if (!esperando || e.ctrlKey || e.metaKey || e.altKey) return false;
+    if (["Shift", "CapsLock", "AltGraph", "Dead"].includes(e.key)) return true;
+    if (e.key === "Backspace") aviso.textContent = txt.backspaceReservado;
+    else if (!teclaValida(e.key)) aviso.textContent = txt.teclaInvalida;
+    else {
+      const nova = e.key.toLowerCase();
+      const antiga = teclas.get(esperando);
+      const dono = [...teclas].find(([n, k]) => k === nova && n !== esperando)?.[0];
+      if (dono) teclas.set(dono, antiga);
+      teclas.set(esperando, nova);
+      esperando = null;
+      guardar();
+      aviso.textContent = dono && antiga ? txt.trocou(nomeDaCelula(dono), rotuloDaTecla(antiga)) : "";
+    }
+    return true;
+  }
+
+  const fechar = abrirSobreposicao("janela-teclas", txt.teclasTitulo, el("div", { class: "caixa-teclas" },
+    el("h2", {}, txt.teclasTitulo),
+    el("p", {}, txt.teclasComo),
+    el("div", { class: "lista-teclas" }, linhas.map((l) => l.linha)),
+    aviso,
+    el("p", { class: "suave pequeno" }, txt.teclasDica),
+    el("div", { class: "linha entre" },
+      el("button", { type: "button", class: "discreto",
+        onclick: () => { teclas = teclasDasCelulas(nomes); esperando = null; aviso.textContent = ""; guardar(); } },
+        txt.restaurar),
+      el("button", { type: "button", class: "primario", onclick: () => fechar() }, txt.pronto))), aoTecla);
+  desenhar();
+  linhas[0].botao.focus();
+}
+
+function somDaContagem() {
+  let ctx = null;
+  const tocar = (freq, dur, vol, tipo = "sine", atraso = 0) => {
+    ctx ??= new (window.AudioContext || window.webkitAudioContext)();
+    const t = ctx.currentTime + atraso;
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.type = tipo; osc.frequency.value = freq;
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.connect(g).connect(ctx.destination);
+    osc.start(t); osc.stop(t + dur + 0.02);
+  };
+  return {
+    clique: () => { tocar(1900, .03, .12, "square"); tocar(320, .05, .08, "triangle"); },
+    erro: () => tocar(140, .12, .1, "sawtooth"),
+    sino: () => { tocar(1318, 1.4, .18); tocar(1976, 1.1, .08, "sine", .01); tocar(1318, 1.2, .12, "sine", .28); },
+  };
+}
+
+// ── tela: opções da rodada ────────────────────────────────
+async function telaContagem() {
+  const banco = await carregarBanco();
+  const opcoes = opcoesDaContagem();
+  const [minimo, maximo] = banco.limites;
+  const quantidadeValida = (n) => Number.isInteger(n) && n >= minimo && n <= maximo;
+  if (!quantidadeValida(opcoes.n)) opcoes.n = 100;
+  const manual = opcoes.manual === true || !banco.tamanhos.includes(opcoes.n);
+  prepararIdioma(opcoes, banco.tipos);
+
+  const redesenhar = () => telaContagem().catch(mostrarErro);
+  const mudar = (campos) => { guardarOpcoes({ ...opcoesDaContagem(), ...campos }); return redesenhar(); };
+
+  const topo = cabecalho(txt.titulo, seletorDeIdioma(opcoes.idioma, (idioma) => mudar({ idioma })));
+
+  if (!banco.tipos.length) {
+    tela(topo,
+      banco.avisos?.length ? el("section", { class: "cartao aviso" }, el("ul", {}, banco.avisos.map((a) => el("li", {}, a)))) : null,
+      el("section", { class: "cartao" },
+        el("h2", {}, txt.nenhumaCelula),
+        el("p", {}, txt.crieAsPastas[0], el("code", {}, "celulas/"), txt.crieAsPastas[1],
+          el("code", {}, "python build.py"), txt.crieAsPastas[2]),
+        el("pre", { class: "arvore" }, txt.arvore),
+        el("p", { class: "suave pequeno" }, txt.nomeDaPasta)));
+    return;
+  }
+
+  const escolha = (lista, atual, rotulo, aoEscolher) => el("div", { class: "escolhas", role: "radiogroup", "aria-label": rotulo },
+    lista.map((item) => el("button", {
+      type: "button", class: `escolha-item${item.id === atual ? " ativa" : ""}`,
+      role: "radio", "aria-checked": String(item.id === atual),
+      onclick: () => aoEscolher(item.id),
+    }, el("strong", {}, item.nome), item.detalhe ? el("span", {}, item.detalhe) : null)));
+
+  const total = banco.tipos.reduce((s, t) => s + t.imagens, 0);
+  const teclas = teclasDasCelulas(banco.tipos.map((t) => t.nome), opcoes.teclas);
+  const kbds = new Map(banco.tipos.map((t) => [t.nome, el("kbd", {}, teclas.has(t.nome) ? rotuloDaTecla(teclas.get(t.nome)) : "")]));
+  const mostrarTeclas = (novas) => {
+    for (const [nome, kbd] of kbds) {
+      kbd.textContent = novas.has(nome) ? rotuloDaTecla(novas.get(nome)) : "";
+      kbd.hidden = !novas.has(nome);
+    }
+  };
+  mostrarTeclas(teclas);
+
+  const comecar = el("button", { class: "primario grande largo-total", onclick: () => iniciarRodada() }, txt.comecar(inteiro(opcoes.n)));
+  const erroQuantas = el("p", { class: "erro-quantas", role: "status" });
+  const campoQuantas = el("input", {
+    type: "number", class: "campo-quantas", min: minimo, max: maximo, step: 1,
+    inputmode: "numeric", value: opcoes.n,
+    oninput: () => {
+      const n = Number(campoQuantas.value);
+      const valida = campoQuantas.value !== "" && quantidadeValida(n);
+      erroQuantas.textContent = valida ? "" : txt.foraDoLimite(inteiro(minimo), inteiro(maximo));
+      comecar.disabled = !valida;
+      if (!valida) return;
+      guardarOpcoes({ ...opcoesDaContagem(), n, manual: true });
+      comecar.textContent = txt.comecar(inteiro(n));
+    },
+    onkeydown: (e) => { if (e.key === "Enter" && !comecar.disabled) comecar.click(); },
+  });
+
+  const quantas = [
+    ...banco.tamanhos.map((n) => ({ id: n, nome: inteiro(n) })),
+    { id: "manual", nome: txt.outra, detalhe: txt.outraDetalhe(inteiro(minimo), inteiro(maximo)) },
+  ];
+  const escolherQuantas = (id) => {
+    if (id !== "manual") return mudar({ n: id, manual: false });
+    return mudar({ manual: true }).then(() => {
+      const campo = document.querySelector(".campo-quantas");
+      campo?.focus(); campo?.select();
+    });
+  };
+
+  const resumo = banco.resumo || {};
+  const resumoEl = Object.keys(resumo).length ? (() => {
+    const loc = txt.local;
+    const n = (k) => (resumo[k] || 0).toLocaleString(loc);
+    const fora = resumo.fora || 0, rep = resumo.repetida || 0;
+    return el("p", { class: "suave pequeno" },
+      `${n("pasta")} imagens do banco`,
+      fora ? `, ${n("fora")} de pasta sem tecla` : null,
+      rep ? `${fora ? ";" : ","} ${n("repetida")} repetidas ignoradas` : null,
+      ".");
+  })() : null;
+
+  tela(topo,
+    banco.avisos?.length ? el("section", { class: "cartao aviso" }, el("ul", {}, banco.avisos.map((a) => el("li", {}, a)))) : null,
+    el("section", { class: "cartao destaque" },
+      el("p", {}, txt.comoFunciona),
+      el("div", { class: "previa-teclas" }, banco.tipos.map((t, i) => {
+        const ext = t.ext || ".jpg";
+        return el("div", { class: "previa-tecla", style: `--tecla: ${CORES_TECLA[i % CORES_TECLA.length]}` },
+          el("img", { src: `celulas/${t.exemplo}${ext}`, alt: "", loading: "lazy" }),
+          el("strong", {}, nomeDaCelula(t.nome)),
+          el("span", { class: "suave pequeno" }, txt.imagens(t.imagens)),
+          t.referencia ? el("span", { class: "suave pequeno" }, txt.faixa(...t.referencia.map(txt.numero))) : null,
+          kbds.get(t.nome));
+      })),
+      el("div", { class: "linha entre" },
+        el("p", { class: "suave pequeno", style: "margin: 0" }, txt.resumoTeclas(banco.tipos.length, txt.imagens(total)),
+          banco.tipos.every((t) => t.referencia) ? txt.proporcaoReferencia : txt.proporcaoAoAcaso),
+        el("button", { type: "button", onclick: () => configurarTeclas(banco.tipos, mostrarTeclas) },
+          icone("teclado"), txt.configurarTeclas)),
+      resumoEl),
+    el("section", { class: "cartao" },
+      el("h2", {}, txt.quantasCelulas),
+      escolha(quantas, manual ? "manual" : opcoes.n, txt.quantasCelulas, escolherQuantas),
+      manual ? el("label", { class: "quantas-manual" }, el("span", {}, txt.quantasManual), campoQuantas) : null,
+      manual ? erroQuantas : null,
+      el("h2", { class: "espaco-acima" }, txt.ritmo),
+      escolha(RITMOS.map((r) => ({ id: r.id, nome: txt.ritmos[r.id][0], detalhe: txt.ritmos[r.id][1] })), opcoes.ritmo, txt.ritmo,
+        (ritmo) => mudar({ ritmo })),
+      comecar));
+}
+
+function inteiro(n) { return n.toLocaleString(txt.local); }
+
+// ── a rodada ──────────────────────────────────────────────
+async function telaRodadaContagem() {
+  const banco = await carregarBanco();
+  if (!banco.tipos.length) { await telaContagem(); return; }
+  const opcoes = opcoesDaContagem();
+  prepararIdioma(opcoes, banco.tipos);
+  await rodadaDeContagem(banco, banco.tipos, opcoes);
+}
+
+async function rodadaDeContagem(banco, tipos, opcoes) {
+  let { celulas } = sortearRodadaLocal(banco, opcoes.n);
+  if (!celulas.length) { await telaContagem(); return; }
+
+  const ritmo = RITMOS.find((r) => r.id === opcoes.ritmo) || RITMOS[0];
+  const nomes = tipos.map((t) => t.nome);
+  const teclasDoTeclado = teclasDasCelulas(nomes, opcoes.teclas);
+  const porTecla = new Map([...teclasDoTeclado].map(([n, k]) => [k, n]));
+  const respostas = [];
+  const contagem = new Map(nomes.map((n) => [n, 0]));
+  const som = somDaContagem();
+  let comSom = opcoes.som !== false;
+  let atual = 0, terminou = false, relogio = null;
+
+  const slots = celulas.map((c) => el("div", { class: "slot-celula" },
+    el("img", { alt: "", draggable: "false", "data-src": c.url })));
+  const fita = el("div", { class: "fita-celulas" }, slots);
+  const tempo = el("div", { class: "tempo-celula" }, el("span", {}));
+  const campo = el("div", { class: `campo-contagem${ritmo.segundos ? " esteira" : ""}` },
+    fita, el("div", { class: "ocular-contagem", "aria-hidden": "true" }), ritmo.segundos ? tempo : null);
+
+  const totalEl = el("span", { class: "visor-total" });
+  const teclaEls = nomes.map((nome, i) => {
+    const visor = el("span", { class: "visor-tecla" }, "0");
+    const rotulo = nomeDaCelula(nome);
+    const t = el("button", {
+      type: "button", class: "tecla", style: `--tecla: ${CORES_TECLA[i % CORES_TECLA.length]}`,
+      onmousedown: (e) => e.preventDefault(),
+      onclick: () => contarCelula(nome),
+    }, visor, el("span", { class: "tampo-tecla" },
+      el("span", { class: `nome-tecla${rotulo.split(" ").some((p) => p.length > 12) ? " longo" : ""}` }, rotulo),
+      teclasDoTeclado.has(nome) ? el("kbd", {}, rotuloDaTecla(teclasDoTeclado.get(nome))) : null));
+    return { nome, tecla: t, visor };
+  });
+  const botaoSom = el("button", { type: "button", class: "discreto", onclick: alternarSom });
+  const desfazer = el("button", { type: "button", class: "discreto", onclick: voltar, disabled: true }, txt.desfazer);
+
+  app.classList.add("largo");
+  tela(
+    el("div", { class: "barra-topo" },
+      el("a", { class: "voltar", href: "#",
+        onclick: (e) => { if (respostas.length && !confirm(txt.abandonar)) e.preventDefault(); else { e.preventDefault(); ir("#"); } } },
+        `← ${txt.contagem}`),
+      botaoSom),
+    el("div", { class: "bancada-contagem" },
+      campo,
+      el("div", { class: "pianinho" },
+        el("div", { class: "painel-pianinho" },
+          el("div", { class: "total-pianinho" },
+            el("span", { class: "rotulo-visor" }, txt.total),
+            totalEl,
+            el("span", { class: "rotulo-visor" }, txt.de(inteiro(celulas.length)))),
+          el("div", { class: "linha" }, desfazer)),
+        el("div", { class: "teclas" }, teclaEls.map((t) => t.tecla))),
+      el("p", { class: "suave pequeno dica-contagem" },
+        ritmo.segundos ? txt.dicaEsteira(txt.numero(ritmo.segundos)) : txt.dicaLivre)));
+
+  function pintarSom() { botaoSom.textContent = comSom ? txt.somLigado : txt.somDesligado; }
+  function alternarSom() {
+    comSom = !comSom;
+    guardarOpcoes({ ...opcoesDaContagem(), som: comSom });
+    pintarSom();
+  }
+
+  function carregarVizinhas() {
+    slots.forEach((slot, i) => {
+      const img = slot.firstChild;
+      const perto = i >= atual - 3 && i <= atual + 6;
+      if (perto && !img.src) img.src = img.dataset.src;
+      slot.classList.toggle("atual", i === atual);
+      slot.classList.toggle("passou", i < atual);
+    });
+  }
+
+  function posicionar() {
+    const largura = slots[0].offsetWidth || 200;
+    fita.style.transform = `translateX(${campo.clientWidth / 2 - largura / 2 - atual * largura}px)`;
+    carregarVizinhas();
+    totalEl.textContent = String(respostas.filter((r) => r !== null).length).padStart(3, "0");
+    for (const t of teclaEls) t.visor.textContent = String(contagem.get(t.nome));
+    desfazer.disabled = !respostas.length || terminou;
+  }
+
+  function iniciarRelogio() {
+    clearTimeout(relogio);
+    if (!ritmo.segundos || terminou) return;
+    const barra = tempo.firstChild;
+    barra.getAnimations().forEach((a) => a.cancel());
+    barra.animate([{ transform: "scaleX(1)" }, { transform: "scaleX(0)" }],
+      { duration: ritmo.segundos * 1000, easing: "linear", fill: "forwards" });
+    relogio = setTimeout(() => avancar(null), ritmo.segundos * 1000);
+  }
+
+  function contarCelula(nome) {
+    if (terminou) return;
+    if (comSom) som.clique();
+    const t = teclaEls.find((k) => k.nome === nome);
+    t.tecla.classList.remove("apertada");
+    void t.tecla.offsetWidth;
+    t.tecla.classList.add("apertada");
+    contagem.set(nome, contagem.get(nome) + 1);
+    slots[atual].style.setProperty("--marca", t.tecla.style.getPropertyValue("--tecla"));
+    slots[atual].classList.add("contada");
+    avancar(nome);
+  }
+
+  function avancar(resposta) {
+    if (terminou) return;
+    respostas.push(resposta);
+    if (resposta === null) slots[atual].classList.add("perdida");
+    atual += 1;
+    if (atual >= celulas.length) { fim(); return; }
+    posicionar(); iniciarRelogio();
+  }
+
+  function voltar() {
+    if (!respostas.length || terminou) return;
+    const ultima = respostas.pop();
+    if (ultima !== null) contagem.set(ultima, contagem.get(ultima) - 1);
+    atual -= 1;
+    slots[atual].classList.remove("contada", "perdida");
+    posicionar(); iniciarRelogio();
+  }
+
+  function aoTecla(e) {
+    if (e.ctrlKey || e.metaKey || e.altKey || e.repeat || e.target.matches?.("input, select, textarea")) return;
+    if (e.key === "Backspace") { e.preventDefault(); voltar(); return; }
+    const nome = porTecla.get(e.key.toLowerCase());
+    if (!nome) return;
+    e.preventDefault(); contarCelula(nome);
+  }
+
+  function sair() {
+    clearTimeout(relogio);
+    document.removeEventListener("keydown", aoTecla);
+    window.removeEventListener("resize", posicionar);
+  }
+
+  async function fim() {
+    terminou = true;
+    clearTimeout(relogio);
+    posicionar();
+    campo.classList.add("terminou");
+    if (comSom) som.sino();
+    let r;
+    try {
+      const entradas = celulas.map((c, i) => ({ codigo: c.codigo, contou: respostas[i] ?? null }));
+      [r] = await Promise.all([
+        Promise.resolve(corrigirContagemLocal(banco, entradas)),
+        pausa(SEM_ANIMACAO ? 0 : 900),
+      ]);
+    } catch (erro) {
+      toast(txt.naoDeuCerto(erro.message));
+      return;
+    }
+    if (!campo.isConnected) return;
+    sair();
+    resultadoDaContagem(r, celulas, tipos);
+  }
+
+  document.addEventListener("keydown", aoTecla);
+  window.addEventListener("resize", posicionar);
+  aoSair = sair;
+  pintarSom();
+  requestAnimationFrame(() => {
+    fita.classList.add("sem-transicao");
+    posicionar();
+    requestAnimationFrame(() => fita.classList.remove("sem-transicao"));
+    iniciarRelogio();
+  });
+}
+
+// ── o resultado ───────────────────────────────────────────
+function resultadoDaContagem(r, celulas, tipos) {
+  const opcoes = opcoesDaContagem();
+  const urlMap = new Map(celulas.map((c) => [c.codigo, c.url]));
+  const cor = new Map(tipos.map((t, i) => [t.nome, CORES_TECLA[i % CORES_TECLA.length]]));
+  const nota = pct(r.certas, r.total);
+  const placar = el("strong", {}, "0%");
+  contar(placar, nota, "%");
+  const erradas = r.itens.filter((i) => i.contou !== i.real);
+  const maior = Math.max(1, ...r.tabela.map((l) => Math.max(l.real_pct, l.contado_pct)));
+  const barra = (valor, classe, celula) => el("span", {
+    class: `barra-contagem ${classe}`,
+    style: `width: ${(100 * valor) / maior}%; --tecla: ${cor.get(celula)}`,
+  });
+  const dif = (l) => {
+    const d = Math.round((l.contado_pct - l.real_pct) * 10) / 10;
+    return el("span", { class: `diferenca${d === 0 ? " igual" : ""}` },
+      d === 0 ? "=" : `${d > 0 ? "+" : ""}${txt.numero(d)}`);
+  };
+  const trocarIdioma = (idioma) => {
+    guardarOpcoes({ ...opcoes, idioma });
+    prepararIdioma({ idioma }, tipos);
+    resultadoDaContagem(r, celulas, tipos);
+  };
+
+  app.classList.remove("largo");
+  tela(
+    cabecalho(txt.resultado, seletorDeIdioma(opcoes.idioma, trocarIdioma), { href: "#", texto: txt.contagem }),
+    el("section", { class: `cartao resultado-contagem ${faixaDaNota(nota)}` },
+      el("div", { class: "placar-contagem" }, placar, el("span", {}, txt.contadasCerto)),
+      el("p", {}, txt.certas(inteiro(r.certas), inteiro(r.total)) + (r.nao_contadas ? txt.semContar(r.nao_contadas) : "") + "."),
+      el("table", { class: "tabela-contagem" },
+        el("thead", {}, el("tr", {}, txt.colunas.map((c) => el("th", {}, c)))),
+        el("tbody", {}, r.tabela.map((l) => el("tr", {},
+          el("td", {}, el("span", { class: "bolinha", style: `background: ${cor.get(l.celula)}` }), " ", nomeDaCelula(l.celula)),
+          el("td", {}, `${txt.numero(l.real_pct)}%`),
+          el("td", {}, `${txt.numero(l.contado_pct)}%`),
+          el("td", { class: "coluna-barras" }, barra(l.real_pct, "real", l.celula), barra(l.contado_pct, "contado", l.celula)),
+          el("td", {}, dif(l)))))),
+      el("p", { class: "suave pequeno" }, txt.legendaBarras)),
+    r.trocas.length ? el("section", { class: "cartao" },
+      el("h2", {}, txt.trocas),
+      el("ul", { class: "trocas" }, r.trocas.map((t) => el("li", {},
+        el("strong", {}, nomeDaCelula(t.real)), txt.contadoComo, el("strong", {}, nomeDaCelula(t.contou)),
+        el("span", { class: "vezes" }, `${t.vezes}×`))))) : null,
+    erradas.length ? el("section", { class: "cartao" },
+      el("h2", {}, txt.erradas(erradas.length)),
+      el("div", { class: "galeria-erros" }, erradas.map((i) => el("figure", {},
+        el("img", { src: urlMap.get(i.codigo), alt: "", loading: "lazy" }),
+        el("figcaption", {},
+          el("strong", {}, nomeDaCelula(i.real)),
+          el("span", {}, i.contou ? txt.voceContou(nomeDaCelula(i.contou)) : txt.passouSemContar)))))) : null,
+    el("div", { class: "acoes" },
+      el("button", { class: "primario grande", onclick: () => telaRodadaContagem().catch(mostrarErro) }, txt.contarDeNovo),
+      el("button", { class: "grande", onclick: () => telaContagem().catch(mostrarErro) }, txt.mudarOpcoes)));
+  window.scrollTo(0, 0);
+}
+
+// ══════════════════════════════════════════════════════════
+// ROTEADOR SIMPLES
+// ══════════════════════════════════════════════════════════
+
+function ir(rota) {
+  if (aoSair) { aoSair(); aoSair = null; }
+  app.classList.remove("largo");
+  if (rota === "#rodada") {
+    telaRodadaContagem().catch(mostrarErro);
+  } else {
+    telaContagem().catch(mostrarErro);
+  }
+}
+
+function iniciarRodada() {
+  ir("#rodada");
+}
+
+ir(location.hash.slice(1) === "rodada" ? "#rodada" : "#");
+</script>
+</body>
+</html>

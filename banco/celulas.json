@@ -1,0 +1,37 @@
+{
+  "$comment": [
+    "O padrão da contagem de células: as teclas do pianinho e que pasta vai em que tecla.",
+    "Só a pasta diz que célula é: tudo o que está em EOSINÓFILOS/ é eosinófilo, seja qual for o nome do arquivo",
+    "(o SNE_, EO_… do começo do nome é a pré-classificação do CellaVision e não conta).",
+    "Vale a pasta mais próxima da imagem que estiver em \"pastas\", sem diferença de maiúsculas.",
+    "Imagem fora dessas pastas (apoptose, promielócitos, restos celulares…) não entra na contagem.",
+    "Por enquanto, só as cinco células do diferencial normal.",
+    "\"referencia\": a faixa normal de cada célula no diferencial do adulto, em % [mínimo, máximo]. Cada rodada",
+    "sorteia a proporção dentro dessas faixas, como num sangue normal (nada de 10% de basófilos).",
+    "Fonte: valores de referência do hemograma, adultos (16 anos ou mais), Divisão de Laboratório Central do",
+    "HC-FMUSP, https://patologiaclinica.hc.fm.usp.br/exames-especificacao?id=9662 (consultado em 05/10/2026).",
+    "\"ingles\": o nome de cada tecla quando o contador está em inglês. Sem ele, a tecla mostra o nome em português."
+  ],
+  "celulas": ["Segmentado", "Linfócito", "Monócito", "Eosinófilo", "Basófilo"],
+  "pastas": {
+    "SEGMENTADOS": "Segmentado",
+    "LINFÓCITOS": "Linfócito",
+    "MONÓCITOS": "Monócito",
+    "EOSINÓFILOS": "Eosinófilo",
+    "BASÓFILOS": "Basófilo"
+  },
+  "referencia": {
+    "Segmentado": [40, 75],
+    "Linfócito": [20, 45],
+    "Monócito": [2, 10],
+    "Eosinófilo": [1, 6],
+    "Basófilo": [0, 1]
+  },
+  "ingles": {
+    "Segmentado": "Segmented neutrophil",
+    "Linfócito": "Lymphocyte",
+    "Monócito": "Monocyte",
+    "Eosinófilo": "Eosinophil",
+    "Basófilo": "Basophil"
+  }
+}
