@@ -1,6 +1,11 @@
-celulas/
-docs/celulas/
-docs/banco.json
+# Ignora toda a pasta celulas/, exceto as 5 de demo
+celulas/*
+!celulas/SEGMENTADOS/
+!celulas/LINFÓCITOS/
+!celulas/MONÓCITOS/
+!celulas/EOSINÓFILOS/
+!celulas/BASÓFILOS/
+
 __pycache__/
 *.pyc
 .DS_Store
