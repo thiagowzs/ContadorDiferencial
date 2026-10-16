@@ -379,6 +379,32 @@ button.lamina[aria-expanded="true"] { border-color: var(--eosina); box-shadow: 0
 .trocas li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 10px 0; border-bottom: 1px solid var(--borda); }
 .trocas li:last-child { border-bottom: 0; }
 .trocas .vezes { margin-left: auto; padding: 2px 10px; border-radius: 999px; background: var(--superficie-2); font-weight: 700; }
+/* ── encaminhar para um amigo ──────────────────────────── */
+.caixa-compartilhar {
+  display: grid; gap: 12px; width: min(440px, 100%); padding: 22px 24px 14px; border-radius: 16px;
+  background: var(--superficie); color: var(--texto); box-shadow: 0 24px 70px rgba(0,0,0,.45);
+}
+.caixa-compartilhar h2 { margin: 0; }
+.caixa-compartilhar > p { margin: 0 0 4px; color: var(--suave); }
+.linha-link { display: flex; gap: 8px; }
+.campo-link {
+  flex: 1; min-width: 0; min-height: 48px; padding: 0 12px;
+  border: 1px solid var(--borda); border-radius: var(--raio-botao);
+  background: var(--superficie-2); color: var(--texto); font: inherit; font-size: .9rem;
+}
+.campo-link:focus { outline: 3px solid color-mix(in srgb, var(--primaria) 45%, transparent); outline-offset: 0; }
+.botao.whatsapp { border-color: #25d366; background: #25d366; color: #08321b; font-weight: 700; }
+.botao.whatsapp:hover { border-color: #1fb85a; background: #1fb85a; }
+.sobreposicao.janela-compartilhar button { border-color: var(--borda); background: var(--superficie); color: var(--texto); }
+.sobreposicao.janela-compartilhar button.discreto { border-color: transparent; background: none; color: var(--suave); }
+.sobreposicao.janela-compartilhar button.primario { border-color: var(--primaria); background: var(--primaria); color: var(--primaria-texto); }
+/* ── rodapé ────────────────────────────────────────────── */
+.rodape { display: flex; justify-content: center; align-items: center; gap: 6px; padding: 0 16px 28px; color: var(--suave); font-size: .86rem; }
+.rodape:empty { display: none; }
+.rodape-icone { display: inline-grid; place-items: center; width: 38px; height: 38px; border-radius: 8px; color: var(--suave); }
+.rodape-icone:hover { background: var(--superficie-2); color: var(--texto); }
+.rodape-icone svg { width: 22px; height: 22px; }
+.rodape-icone .icone { stroke-width: 1.7; }
 /* ── histórico ─────────────────────────────────────────── */
 .lista-historico { margin: 0; padding: 0; list-style: none; }
 .lista-historico a {
@@ -420,6 +446,7 @@ button.lamina[aria-expanded="true"] { border-color: var(--eosina); box-shadow: 0
 </head>
 <body>
 <main id="app"><p class="carregando">Carregando…</p></main>
+<footer id="rodape" class="rodape"></footer>
 <script>
 "use strict";
 
@@ -471,6 +498,11 @@ function pct(acertos, total) {
 }
 
 const ICONES = {
+  compartilhar: ["M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7", "M16 6l-4-4-4 4", "M12 2v13"],
+  copiar: ["M9 9h11v11H9z", "M5 15H4V4h11v1"],
+  certo: ["M5 12.5l4.5 4.5L19 7.5"],
+  conversa: ["M20.5 11.6a8.5 8.5 0 0 1-12.6 7.4L3.5 20.5l1.5-4.3A8.5 8.5 0 1 1 20.5 11.6z"],
+  site: ["M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z", "M3 12h18", "M12 3a14 14 0 0 1 0 18", "M12 3a14 14 0 0 0 0 18"],
   historico: ["M3 12a9 9 0 1 0 2.6-6.4", "M3 4v4h4", "M12 7v5l3 2"],
   teclado: ["M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z",
     "M6 10h.01", "M10 10h.01", "M14 10h.01", "M18 10h.01", "M8 14h8"],
@@ -761,6 +793,18 @@ const TEXTOS = {
     contouPorCem: (v) => `você contou ${v}`,
     contarDeNovo: "Contar de novo",
     mudarOpcoes: "Mudar as opções",
+    encaminhar: "Encaminhar para um amigo",
+    encaminharComo: "Mande o contador para alguém que também está treinando a contagem diferencial.",
+    copiarLink: "Copiar link",
+    linkCopiado: "Link copiado",
+    naoCopiou: "Não deu para copiar. Selecione o link e copie à mão.",
+    enviarWhatsapp: "Enviar pelo WhatsApp",
+    outrosApps: "Outros aplicativos",
+    mensagemConvite: "Olha esse contador diferencial para treinar a contagem de leucócitos:",
+    fechar: "Fechar",
+    feitoPor: (n) => `Feito por ${n}`,
+    linkedinDe: (n) => `LinkedIn de ${n}`,
+    siteDe: (n) => `Site de ${n}`,
     perfis: "Perfis de doença",
     sangueNormal: "Sangue normal",
     sangueNormalDetalhe: (n) => `em uso, ${n} células`,
@@ -861,6 +905,18 @@ const TEXTOS = {
     contouPorCem: (v) => `you counted ${v}`,
     contarDeNovo: "Count again",
     mudarOpcoes: "Change options",
+    encaminhar: "Send to a friend",
+    encaminharComo: "Send the counter to someone who is also practicing differential counts.",
+    copiarLink: "Copy link",
+    linkCopiado: "Link copied",
+    naoCopiou: "Couldn't copy. Select the link and copy it by hand.",
+    enviarWhatsapp: "Send on WhatsApp",
+    outrosApps: "Other apps",
+    mensagemConvite: "Check out this differential counter for practicing white cell counts:",
+    fechar: "Close",
+    feitoPor: (n) => `Made by ${n}`,
+    linkedinDe: (n) => `${n} on LinkedIn`,
+    siteDe: (n) => `${n}'s website`,
     perfis: "Disease profiles",
     sangueNormal: "Normal blood",
     sangueNormalDetalhe: (n) => `in use, ${n} cells`,
@@ -898,6 +954,67 @@ let nomesEmIngles = new Map();
 function prepararIdioma(opcoes, tipos) {
   txt = TEXTOS[opcoes.idioma] || TEXTOS.pt;
   nomesEmIngles = new Map(tipos.filter((t) => t.ingles).map((t) => [t.nome, t.ingles]));
+  montarRodape(_banco);
+}
+
+function logoLinkedin() {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("aria-hidden", "true");
+  svg.innerHTML = `<rect width="24" height="24" rx="4" fill="#0a66c2"/>
+    <circle cx="7" cy="7.2" r="1.7" fill="#fff"/><rect x="5.5" y="9.6" width="3" height="8.9" fill="#fff"/>
+    <path d="M10.6 9.6h2.9v1.3c.5-.9 1.6-1.5 3-1.5 2.4 0 3.4 1.5 3.4 4v5.1h-3v-4.6c0-1.2-.4-2-1.5-2-1.2 0-1.8.9-1.8 2.1v4.5h-3z" fill="#fff"/>`;
+  return svg;
+}
+
+// Quem fez o contador, com o LinkedIn e o site (os que estiverem no contato de perfis.json)
+function montarRodape(banco) {
+  const c = banco?.contato || {};
+  const rodape = document.getElementById("rodape");
+  if (!c.nome) { rodape.replaceChildren(); return; }
+  const externo = (href, rotulo, conteudo) => el("a", { class: "rodape-icone", href, target: "_blank", rel: "noopener", "aria-label": rotulo, title: rotulo }, conteudo);
+  rodape.replaceChildren(...[
+    el("span", {}, txt.feitoPor(c.nome)),
+    c.linkedin ? externo(c.linkedin, txt.linkedinDe(c.nome), logoLinkedin()) : null,
+    c.site ? externo(c.site, txt.siteDe(c.nome), icone("site")) : null,
+  ].filter(Boolean));
+}
+
+// O endereço que vai para o amigo é sempre o do site publicado, mesmo testando no PC
+const ENDERECO_DO_SITE = "https://thiagowzs.github.io/ContadorDiferencial/";
+
+function encaminharParaUmAmigo() {
+  const campo = el("input", {
+    class: "campo-link", type: "text", readonly: "", value: ENDERECO_DO_SITE, "aria-label": "Link",
+    onfocus: (e) => e.target.select(),
+  });
+  const copiar = el("button", { type: "button", class: "primario", onclick: copiarLink }, icone("copiar"), txt.copiarLink);
+  let volta = null;
+  async function copiarLink() {
+    try {
+      await navigator.clipboard.writeText(ENDERECO_DO_SITE);
+    } catch {
+      campo.focus(); campo.select();
+      if (!document.execCommand("copy")) { toast(txt.naoCopiou); return; }
+    }
+    copiar.replaceChildren(icone("certo"), txt.linkCopiado);
+    clearTimeout(volta);
+    volta = setTimeout(() => copiar.replaceChildren(icone("copiar"), txt.copiarLink), 2200);
+  }
+  const whatsapp = `https://wa.me/?text=${encodeURIComponent(`${txt.mensagemConvite} ${ENDERECO_DO_SITE}`)}`;
+  const fechar = abrirSobreposicao("janela-compartilhar", txt.encaminhar, el("div", { class: "caixa-compartilhar" },
+    el("h2", {}, txt.encaminhar),
+    el("p", {}, txt.encaminharComo),
+    el("div", { class: "linha-link" }, campo, copiar),
+    el("a", { class: "botao whatsapp", href: whatsapp, target: "_blank", rel: "noopener" }, icone("conversa"), txt.enviarWhatsapp),
+    // No celular, o menu de compartilhar do sistema (Telegram, Instagram, e-mail…)
+    navigator.share ? el("button", {
+      type: "button",
+      onclick: () => navigator.share({ title: txt.titulo, text: txt.mensagemConvite, url: ENDERECO_DO_SITE }).catch(() => {}),
+    }, icone("compartilhar"), txt.outrosApps) : null,
+    el("div", { class: "linha", style: "justify-content: flex-end" },
+      el("button", { type: "button", class: "discreto", onclick: () => fechar() }, txt.fechar))));
+  copiar.focus();
 }
 
 function nomeDaCelula(nome) {
@@ -1179,7 +1296,8 @@ async function telaContagem() {
     el("div", { class: "linha ferramentas" },
       el("button", { type: "button", onclick: () => configurarTeclas(banco.tipos, () => {}) },
         icone("teclado"), txt.configurarTeclas),
-      el("a", { class: "botao", href: "#historico" }, icone("historico"), txt.historico)),
+      el("a", { class: "botao", href: "#historico" }, icone("historico"), txt.historico),
+      el("button", { type: "button", onclick: encaminharParaUmAmigo }, icone("compartilhar"), txt.encaminhar)),
     el("section", { class: "cartao" },
       el("h2", {}, txt.quantasCelulas),
       escolha(quantas, manual ? "manual" : opcoes.n, txt.quantasCelulas, escolherQuantas),

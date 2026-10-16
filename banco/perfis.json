@@ -4,9 +4,14 @@
     "e em que proporção; por enquanto só os nomes. Um perfil sem \"celulas\" aparece como lâmina em branco",
     "(em preparação). O painel ordena pelo nome, então a ordem aqui não importa.",
     "\"ingles\": o nome com o contador em inglês. \"completo\" e \"completo_ingles\": o nome por extenso, para as siglas.",
-    "\"contato\": o e-mail que aparece no convite das lâminas em branco, para quem quer mandar fotos ou casos."
+    "\"contato\": quem fez o contador. O e-mail aparece no convite das lâminas em branco; o nome, o LinkedIn",
+    "e o site (\"site\", quando houver) aparecem no rodapé de todas as telas."
   ],
-  "contato": { "email": "thi.gomes.santos2@gmail.com" },
+  "contato": {
+    "nome": "Thiago Gomes",
+    "email": "thi.gomes.santos2@gmail.com",
+    "linkedin": "https://www.linkedin.com/in/thiago-gomes-579638109/"
+  },
   "perfis": [
     { "nome": "Crioaglutininas", "ingles": "Cold agglutinins" },
     { "nome": "Cristais de hemoglobina C", "ingles": "Hemoglobin C crystals" },

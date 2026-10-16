@@ -1766,7 +1766,9 @@
     }
   ],
   "contato": {
-    "email": "thi.gomes.santos2@gmail.com"
+    "nome": "Thiago Gomes",
+    "email": "thi.gomes.santos2@gmail.com",
+    "linkedin": "https://www.linkedin.com/in/thiago-gomes-579638109/"
   },
   "por_codigo": {
     "e4f774bc5140": "Segmentado",
