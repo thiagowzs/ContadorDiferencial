@@ -9,25 +9,26 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap">
 <style>
 /* ── variáveis ─────────────────────────────────────────── */
-/* As cores vêm da coloração do esfregaço: o violeta-azur dos núcleos nas ações, a eosina como acento,
-   o lilás do vidro no fundo. */
+/* Cores de hematologia: o vermelho do sangue nas ações, o azul-marinho do jaleco no texto, o branco clínico
+   nas superfícies. O rosa da eosina e o violeta dos núcleos ficam só no esfregaço das lâminas. */
 :root {
-  --fundo: #f1f0f6;
-  --bandeja: #e5e2ee;
+  --fundo: #f5f6f9;
+  --bandeja: #eceef3;
   --superficie: #ffffff;
-  --superficie-2: #f7f6fb;
-  --texto: #221b33;
-  --suave: #665e7c;
-  --borda: #ddd8e8;
-  --primaria: #4a2c83;
-  --primaria-forte: #36206a;
+  --superficie-2: #f8f9fb;
+  --texto: #1c2541;
+  --suave: #5d6680;
+  --borda: #e0e3ea;
+  --primaria: #c62839;
+  --primaria-forte: #a01d2c;
   --primaria-texto: #ffffff;
-  --primaria-suave: #ece6f7;
+  --primaria-suave: #fde9eb;
   --eosina: #d6457a;
-  --vidro: rgba(255,255,255,.62);
-  --vidro-borda: rgba(110,98,145,.3);
-  --fosco: #ebe8f1;
-  --fosco-risco: rgba(255,255,255,.45);
+  --nucleo: #4b2c86;
+  --vidro: rgba(255,255,255,.72);
+  --vidro-borda: rgba(90,100,130,.28);
+  --fosco: #eceef2;
+  --fosco-risco: rgba(255,255,255,.5);
   --certo: #1c7543;
   --certo-fundo: #e3f3e8;
   --erro: #b42318;
@@ -36,21 +37,21 @@
   --aviso-fundo: #fcf1d6;
   --raio: 12px;
   --raio-botao: 10px;
-  --sombra: 0 1px 2px rgba(34,27,51,.06);
-  --sombra-alta: 0 2px 4px rgba(34,27,51,.06), 0 14px 32px rgba(34,27,51,.14);
+  --sombra: 0 1px 2px rgba(28,37,65,.06);
+  --sombra-alta: 0 2px 4px rgba(28,37,65,.06), 0 14px 32px rgba(28,37,65,.14);
   --fonte: "Archivo", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --fundo: #15121d; --bandeja: #0f0d15;
-    --superficie: #1e1a29; --superficie-2: #262134;
-    --texto: #ece8f5; --suave: #a69ebc; --borda: #352e47;
-    --primaria: #b9a2f5; --primaria-forte: #d3c4fa;
-    --primaria-texto: #1a1230; --primaria-suave: #2c2346;
-    --eosina: #f07fa8;
-    --vidro: rgba(255,255,255,.09); --vidro-borda: rgba(185,162,245,.24);
-    --fosco: #2c2740; --fosco-risco: rgba(255,255,255,.04);
+    --fundo: #121520; --bandeja: #0c0e15;
+    --superficie: #1b1f2c; --superficie-2: #232838;
+    --texto: #eef0f6; --suave: #a3aac0; --borda: #2f3547;
+    --primaria: #ff6b79; --primaria-forte: #ff929c;
+    --primaria-texto: #2a070d; --primaria-suave: #3a1820;
+    --eosina: #f07fa8; --nucleo: #b9a2f5;
+    --vidro: rgba(255,255,255,.08); --vidro-borda: rgba(160,170,200,.22);
+    --fosco: #262b3b; --fosco-risco: rgba(255,255,255,.04);
     --certo: #62d394; --certo-fundo: #142c1d;
     --erro: #ff8b7b; --erro-fundo: #3a1916;
     --aviso: #f1c35d; --aviso-fundo: #332811;
@@ -159,7 +160,7 @@ td:last-child, th:last-child { text-align: right; white-space: nowrap; }
 body.sem-rolar { overflow: hidden; }
 .sobreposicao {
   position: fixed; inset: 0; z-index: 80;
-  display: grid; place-items: center; padding: 16px; overflow-y: auto;
+  display: grid; grid-template-columns: minmax(0, 1fr); place-items: center; padding: 16px; overflow-y: auto;
   background: rgba(8,10,14,.86); backdrop-filter: blur(3px);
   color: #e8ebf0; animation: aparece .25s ease-out both;
 }
@@ -180,8 +181,24 @@ body.sem-rolar { overflow: hidden; }
 .placa h1 { margin: 0; font-size: clamp(1.5rem, 3.4vw, 2.15rem); line-height: 1; font-weight: 820; font-stretch: 125%; letter-spacing: -.02em; }
 .titulo-tela { margin: 0; font-size: 1.35rem; font-stretch: 112%; }
 /* ── opções: a mesa (o laminário ao lado das opções) ──── */
-.mesa { display: grid; grid-template-columns: 276px minmax(0, 1fr); gap: 32px; align-items: start; }
-.mesa-principal { min-width: 0; max-width: 700px; }
+.mesa {
+  display: grid; grid-template-columns: 276px minmax(0, 1fr); grid-template-rows: auto 1fr;
+  grid-template-areas: "autor principal" "perfis principal"; gap: 24px 32px; align-items: start;
+}
+.mesa-principal { grid-area: principal; min-width: 0; max-width: 700px; }
+.laminario { grid-area: perfis; }
+/* O cartão do autor: a ilustração, a assinatura e o LinkedIn, no primeiro lugar que se lê */
+.autor { grid-area: autor; overflow: hidden; border: 1px solid var(--borda); border-radius: var(--raio); background: var(--superficie); box-shadow: var(--sombra); }
+.autor-foto { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; object-position: top; background: var(--primaria-suave); }
+.autor-texto { position: relative; display: grid; gap: 12px; padding: 14px 16px 16px; }
+.autor-texto > * { position: relative; }
+/* O átomo da tatuagem do autor, como marca d'água no fim do nome */
+.autor-texto > .autor-atomo { position: absolute; top: 2px; right: 8px; width: 84px; height: 84px; color: var(--primaria); opacity: .2; pointer-events: none; }
+.autor-assinatura { margin: 0; color: var(--suave); font-size: .86rem; line-height: 1.3; }
+.autor-assinatura strong { display: block; color: var(--texto); font-size: 1.2rem; font-weight: 780; font-stretch: 108%; }
+.autor-links { display: grid; gap: 8px; }
+.autor-links .botao { min-height: 44px; padding: 8px 14px; justify-content: flex-start; font-size: .92rem; }
+.autor-links svg { width: 22px; height: 22px; flex: none; }
 .intro { max-width: 60ch; margin: 0 0 16px; font-size: 1.12rem; line-height: 1.5; }
 .ferramentas { margin-bottom: 22px; }
 .letra-miuda { max-width: 70ch; margin: 0; color: var(--suave); font-size: .84rem; }
@@ -189,7 +206,7 @@ body.sem-rolar { overflow: hidden; }
    está pronto, e a lâmina em branco, que ainda não tem células. */
 .laminario {
   padding: 16px 14px 18px; border-radius: var(--raio);
-  background: var(--bandeja); box-shadow: inset 0 1px 3px rgba(34,27,51,.12);
+  background: var(--bandeja); box-shadow: inset 0 1px 3px rgba(28,37,65,.1);
 }
 .laminario h2 { margin: 0 0 12px; font-size: 1.05rem; }
 .laminario h3 { margin: 18px 0 2px; color: var(--suave); font-size: .86rem; font-weight: 650; }
@@ -198,7 +215,7 @@ body.sem-rolar { overflow: hidden; }
 .lamina {
   display: grid; grid-template-columns: minmax(0, 1fr) 62px; min-height: 46px;
   border: 1px solid var(--vidro-borda); border-radius: 3px;
-  background: var(--vidro); box-shadow: inset 0 1px 0 rgba(255,255,255,.5), 0 1px 1px rgba(34,27,51,.06);
+  background: var(--vidro); box-shadow: inset 0 1px 0 rgba(255,255,255,.5), 0 1px 1px rgba(28,37,65,.06);
 }
 .lamina-etiqueta {
   display: flex; flex-direction: column; justify-content: center; min-width: 0; padding: 5px 10px;
@@ -210,8 +227,8 @@ body.sem-rolar { overflow: hidden; }
 .lamina:not(.pronta) .lamina-nome { color: color-mix(in srgb, var(--texto) 72%, var(--suave)); }
 .lamina.pronta .lamina-esfregaco {
   background:
-    radial-gradient(circle at 34% 38%, var(--primaria) 0 1.7px, transparent 2.2px),
-    radial-gradient(circle at 58% 64%, var(--primaria) 0 1.4px, transparent 1.9px),
+    radial-gradient(circle at 34% 38%, var(--nucleo) 0 1.7px, transparent 2.2px),
+    radial-gradient(circle at 58% 64%, var(--nucleo) 0 1.4px, transparent 1.9px),
     radial-gradient(ellipse 78% 66% at 40% 50%, color-mix(in srgb, var(--eosina) 50%, transparent), color-mix(in srgb, var(--eosina) 18%, transparent) 58%, transparent 74%);
 }
 .lamina[aria-current="true"] { border-color: var(--primaria); box-shadow: 0 0 0 2px color-mix(in srgb, var(--primaria) 28%, transparent); }
@@ -234,8 +251,12 @@ button.lamina[aria-expanded="true"] { border-color: var(--eosina); box-shadow: 0
 .convite .botao { width: 100%; min-height: 40px; padding: 8px 14px; font-size: .88rem; }
 .convite-email { display: block; margin-top: 6px; color: var(--suave); font-size: .76rem; text-align: center; overflow-wrap: anywhere; }
 @media (max-width: 880px) {
-  .mesa { grid-template-columns: minmax(0, 1fr); gap: 24px; }
-  .laminario { order: 2; }
+  .mesa { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-template-areas: "autor" "principal" "perfis"; gap: 22px; }
+  /* No celular o autor vira uma faixa: a foto ao lado da assinatura */
+  .autor { display: grid; grid-template-columns: 104px minmax(0, 1fr); align-items: center; }
+  .autor-foto { height: 100%; min-height: 130px; aspect-ratio: auto; }
+  .autor-texto { padding: 12px 14px; }
+  .autor-texto > .autor-atomo { width: 64px; height: 64px; }
 }
 /* ── opções ────────────────────────────────────────────── */
 .escolhas { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -257,7 +278,7 @@ button.lamina[aria-expanded="true"] { border-color: var(--eosina); box-shadow: 0
 .campo-quantas:focus { outline: 3px solid color-mix(in srgb, var(--primaria) 55%, transparent); outline-offset: 0; border-color: var(--primaria); }
 .erro-quantas { min-height: 1.4em; margin: 6px 0 0; color: var(--erro); font-size: .9rem; font-weight: 600; }
 .idiomas { display: inline-flex; padding: 3px; border: 1px solid var(--borda); border-radius: 999px; background: var(--superficie); }
-.idiomas button { min-height: 38px; padding: 0 14px; border: 0; border-radius: 999px; background: none; color: var(--suave); font-size: .88rem; box-shadow: none; }
+.idiomas button { min-height: 38px; padding: 0 14px; white-space: nowrap; border: 0; border-radius: 999px; background: none; color: var(--suave); font-size: .88rem; box-shadow: none; }
 .idiomas button:hover:not(.ativo) { color: var(--texto); background: var(--superficie-2); box-shadow: none; }
 .idiomas button.ativo { background: var(--primaria); color: var(--primaria-texto); }
 .caixa-teclas { width: min(480px, 100%); padding: 22px 24px 18px; border-radius: 20px; background: var(--superficie); color: var(--texto); box-shadow: 0 24px 70px rgba(0,0,0,.45); }
@@ -338,6 +359,7 @@ button.lamina[aria-expanded="true"] { border-color: var(--eosina); box-shadow: 0
 .pianinho .discreto:hover:not(:disabled) { background: rgba(255,255,255,.08); color: #fff; }
 .teclas { display: grid; grid-template-columns: repeat(auto-fit, minmax(126px, 1fr)); gap: 12px; }
 .tecla {
+  touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
   flex-direction: column; gap: 8px; min-height: 0; padding: 10px 8px 0;
   border: 0; border-radius: 16px; background: #2c3039;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.07); color: inherit;
@@ -380,15 +402,44 @@ button.lamina[aria-expanded="true"] { border-color: var(--eosina); box-shadow: 0
 .trocas li:last-child { border-bottom: 0; }
 .trocas .vezes { margin-left: auto; padding: 2px 10px; border-radius: 999px; background: var(--superficie-2); font-weight: 700; }
 /* ── encaminhar para um amigo ──────────────────────────── */
+/* O botão que chama atenção. A cada 4 s, juntos: um reflexo atravessa o botão, o halo vermelho pulsa e o
+   aviãozinho dá uma decolada. Com o mouse em cima, o avião fica decolado e o halo, aceso. */
+.botao-encaminhar {
+  --brilho: rgba(255,255,255,.95);
+  --halo: 0 0 0 3px color-mix(in srgb, var(--primaria) 12%, transparent), 0 6px 18px color-mix(in srgb, var(--primaria) 20%, transparent);
+  --halo-aceso: 0 0 0 7px color-mix(in srgb, var(--primaria) 22%, transparent), 0 8px 26px color-mix(in srgb, var(--primaria) 40%, transparent);
+  position: relative; overflow: hidden; isolation: isolate;
+  border-color: color-mix(in srgb, var(--primaria) 60%, var(--borda));
+  background: var(--primaria-suave); color: var(--primaria-forte);
+  box-shadow: var(--halo);
+  animation: halo-encaminhar 4s ease-in-out 1.2s infinite;
+}
+@keyframes halo-encaminhar { 0%, 40%, 88%, 100% { box-shadow: var(--halo); } 62% { box-shadow: var(--halo-aceso); } }
+.botao-encaminhar::after {
+  content: ""; position: absolute; z-index: -1; top: -2px; bottom: -2px; left: 0; width: 55%;
+  background: linear-gradient(100deg, transparent 10%, var(--brilho) 50%, transparent 90%);
+  transform: translateX(-130%) skewX(-20deg);
+  animation: brilho-encaminhar 4s ease-in-out 1.2s infinite;
+  pointer-events: none;
+}
+@keyframes brilho-encaminhar { 0%, 45% { transform: translateX(-130%) skewX(-20deg); } 82%, 100% { transform: translateX(240%) skewX(-20deg); } }
+.botao-encaminhar .icone { animation: aviao-decola 4s ease-in-out 1.2s infinite; }
+@keyframes aviao-decola {
+  0%, 44%, 80%, 100% { transform: none; }
+  56% { transform: translate(5px, -5px) rotate(-14deg); }
+  66% { transform: translate(6px, -6px) rotate(-14deg); }
+}
+.botao-encaminhar:hover:not(:disabled) { border-color: var(--primaria); animation: none; box-shadow: var(--halo-aceso); }
+.botao-encaminhar:hover .icone { animation: none; transform: translate(4px, -4px) rotate(-12deg); transition: transform .3s cubic-bezier(.3,.7,.3,1.4); }
 .caixa-compartilhar {
-  display: grid; gap: 12px; width: min(440px, 100%); padding: 22px 24px 14px; border-radius: 16px;
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; width: min(440px, 100%); padding: 22px 24px 14px; border-radius: 16px;
   background: var(--superficie); color: var(--texto); box-shadow: 0 24px 70px rgba(0,0,0,.45);
 }
 .caixa-compartilhar h2 { margin: 0; }
 .caixa-compartilhar > p { margin: 0 0 4px; color: var(--suave); }
 .linha-link { display: flex; gap: 8px; }
 .campo-link {
-  flex: 1; min-width: 0; min-height: 48px; padding: 0 12px;
+  flex: 1 1 0; width: 0; min-width: 0; min-height: 48px; padding: 0 12px;
   border: 1px solid var(--borda); border-radius: var(--raio-botao);
   background: var(--superficie-2); color: var(--texto); font: inherit; font-size: .9rem;
 }
@@ -405,6 +456,7 @@ button.lamina[aria-expanded="true"] { border-color: var(--eosina); box-shadow: 0
 .rodape-icone:hover { background: var(--superficie-2); color: var(--texto); }
 .rodape-icone svg { width: 22px; height: 22px; }
 .rodape-icone .icone { stroke-width: 1.7; }
+.rodape .autor-atomo { width: 22px; height: 22px; color: var(--primaria); opacity: .75; }
 /* ── histórico ─────────────────────────────────────────── */
 .lista-historico { margin: 0; padding: 0; list-style: none; }
 .lista-historico a {
@@ -428,12 +480,50 @@ button.lamina[aria-expanded="true"] { border-color: var(--eosina); box-shadow: 0
 .galeria-erros img { width: 112px; height: 112px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 3px var(--borda); }
 .galeria-erros figcaption { display: flex; flex-direction: column; font-size: .85rem; line-height: 1.3; }
 .galeria-erros figcaption span { color: var(--erro); }
+/* No celular, a rodada inteira cabe numa tela: a esteira em cima e as 14 teclas embaixo, em 4 colunas,
+   com a contagem de cada uma num selo no canto da tecla. */
 @media (max-width: 640px) {
-  .campo-contagem { --slot: 150px; height: 220px; }
-  .slot-celula img { width: 110px; height: 110px; }
-  .ocular-contagem { width: 176px; height: 176px; }
-  .teclas { grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); }
-  .tampo-tecla { min-height: 76px; }
+  main.na-rodada { padding-top: max(8px, env(safe-area-inset-top)); padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+  .na-rodada .barra-topo { padding: 2px 0 4px; }
+  .na-rodada .barra-topo a.voltar { padding: 6px 12px; font-size: .88rem; }
+  .bancada-contagem { gap: 10px; margin-top: 4px; }
+  .campo-contagem { --slot: 150px; height: 222px; border-radius: 20px; }
+  .slot-celula img { width: 116px; height: 116px; }
+  .ocular-contagem { width: 184px; height: 184px; }
+  .pianinho { padding: 10px 10px 12px; border-radius: 18px; }
+  .painel-pianinho { margin-bottom: 12px; }
+  .visor-total { font-size: 1.3rem; }
+  .teclas { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px 6px; }
+  .tecla, .tecla:hover:not(:disabled) { position: relative; gap: 0; padding: 0; border-radius: 12px; background: none; box-shadow: none; }
+  .tecla .visor-tecla {
+    position: absolute; z-index: 1; top: -9px; right: 3px; min-width: 0; padding: 1px 6px;
+    border-radius: 6px; font-size: .78rem; line-height: 1.25; letter-spacing: .04em;
+  }
+  .tampo-tecla { min-height: 66px; padding: 12px 3px 7px; border-top-width: 5px; border-radius: 10px; transform: translateY(-4px); box-shadow: 0 4px 0 #b9b3a4, 0 5px 8px rgba(0,0,0,.35); }
+  .nome-tecla { font-size: .8rem; font-stretch: 72%; line-height: 1.1; }
+  .nome-tecla.longo { font-stretch: 62%; }
+  .dica-contagem { font-size: .82rem; }
+  /* as outras telas */
+  .barra-topo { flex-wrap: wrap; }
+  .escolhas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ferramentas > *, .acoes > * { flex: 1 1 auto; }
+  .tabela-contagem th:nth-child(4), .tabela-contagem .coluna-barras, .legenda-barras { display: none; }
+  .tabela-contagem th, .tabela-contagem td { padding: 10px 4px; }
+  .lista-historico a { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; }
+  .historico-quando, .historico-detalhe, .lista-historico .selo { grid-column: 1; }
+  .lista-historico .selo { justify-self: start; }
+  .historico-nota { grid-column: 2; grid-row: 1 / span 3; align-self: center; font-size: 1.1rem; }
+}
+/* Telas baixas (iPhone SE e parecidos): a esteira encolhe para as teclas continuarem à vista */
+@media (max-width: 640px) and (max-height: 720px) {
+  .campo-contagem { --slot: 126px; height: 172px; }
+  .slot-celula img { width: 92px; height: 92px; }
+  .ocular-contagem { width: 146px; height: 146px; }
+  .tampo-tecla { min-height: 58px; }
+}
+/* Sem teclado físico (celular, tablet sem teclado): somem as dicas de tecla e a configuração das teclas */
+@media (hover: none) and (pointer: coarse) {
+  .tampo-tecla kbd, .so-teclado { display: none !important; }
 }
 @media (prefers-reduced-motion: reduce) {
   .fita-celulas, .slot-celula img, .tampo-tecla { transition: none; }
@@ -441,7 +531,11 @@ button.lamina[aria-expanded="true"] { border-color: var(--eosina); box-shadow: 0
   .campo-contagem.terminou .ocular-contagem,
   .sobreposicao.janela-teclas .botao-tecla.esperando { animation: none; }
   .toast, .convite { animation: none; }
+  .botao-encaminhar, .botao-encaminhar .icone { animation: none; }
+  .botao-encaminhar::after { display: none; }
+  .botao-encaminhar:hover .icone { transition: none; }
 }
+@media (prefers-color-scheme: dark) { .botao-encaminhar { --brilho: rgba(255,255,255,.22); color: var(--primaria); } }
 </style>
 </head>
 <body>
@@ -499,6 +593,7 @@ function pct(acertos, total) {
 
 const ICONES = {
   compartilhar: ["M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7", "M16 6l-4-4-4 4", "M12 2v13"],
+  aviao: ["M21.5 2.5L10.6 13.4", "M21.5 2.5l-6.8 19-4.1-8.1-8.1-4.1z"],
   copiar: ["M9 9h11v11H9z", "M5 15H4V4h11v1"],
   certo: ["M5 12.5l4.5 4.5L19 7.5"],
   conversa: ["M20.5 11.6a8.5 8.5 0 0 1-12.6 7.4L3.5 20.5l1.5-4.3A8.5 8.5 0 1 1 20.5 11.6z"],
@@ -571,7 +666,8 @@ let _banco = null; // carregado uma vez, reutilizado
 
 async function carregarBanco() {
   if (_banco) return _banco;
-  const resp = await fetch("banco.json");
+  // "no-cache": o navegador sempre confere se o banco mudou (senão a página nova pode vir com o banco velho)
+  const resp = await fetch("banco.json", { cache: "no-cache" });
   if (!resp.ok) throw new Error(`banco.json: ${resp.status} ${resp.statusText}`);
   _banco = await resp.json();
   return _banco;
@@ -768,7 +864,8 @@ const TEXTOS = {
     pronto: "Pronto",
     espaco: "Espaço",
     abandonar: "Abandonar a contagem?",
-    desfazer: "↶ Desfazer (Backspace)",
+    desfazer: "↶ Desfazer",
+    desfazerTecla: "(Backspace)",
     total: "Total",
     de: (n) => `de ${n}`,
     somLigado: "🔊 Som ligado",
@@ -803,6 +900,9 @@ const TEXTOS = {
     mensagemConvite: "Olha esse contador diferencial para treinar a contagem de leucócitos:",
     fechar: "Fechar",
     feitoPor: (n) => `Feito por ${n}`,
+    feitoPorCurto: "Feito por",
+    fotoDoAutor: (n) => `Ilustração de ${n} de jaleco, segurando um tubo de sangue no laboratório de hematologia`,
+    site: "Site",
     linkedinDe: (n) => `LinkedIn de ${n}`,
     siteDe: (n) => `Site de ${n}`,
     perfis: "Perfis de doença",
@@ -880,7 +980,8 @@ const TEXTOS = {
     pronto: "Done",
     espaco: "Space",
     abandonar: "Abandon this count?",
-    desfazer: "↶ Undo (Backspace)",
+    desfazer: "↶ Undo",
+    desfazerTecla: "(Backspace)",
     total: "Total",
     de: (n) => `of ${n}`,
     somLigado: "🔊 Sound on",
@@ -915,6 +1016,9 @@ const TEXTOS = {
     mensagemConvite: "Check out this differential counter for practicing white cell counts:",
     fechar: "Close",
     feitoPor: (n) => `Made by ${n}`,
+    feitoPorCurto: "Made by",
+    fotoDoAutor: (n) => `Illustration of ${n} in a lab coat, holding a blood tube in a hematology lab`,
+    site: "Website",
     linkedinDe: (n) => `${n} on LinkedIn`,
     siteDe: (n) => `${n}'s website`,
     perfis: "Disease profiles",
@@ -957,6 +1061,25 @@ function prepararIdioma(opcoes, tipos) {
   montarRodape(_banco);
 }
 
+function marcaAtomo() {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 100 100");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("class", "autor-atomo");
+  svg.innerHTML = `<g fill="none" stroke="currentColor" stroke-width="3.4">
+      <ellipse cx="50" cy="50" rx="13" ry="46" transform="rotate(6 50 50)"/>
+      <ellipse cx="50" cy="50" rx="47" ry="15" transform="rotate(21 50 50)"/>
+      <ellipse cx="50" cy="50" rx="47" ry="15" transform="rotate(-31 50 50)"/>
+    </g>
+    <g fill="currentColor">
+      <circle cx="54.6" cy="93.2" r="4.6" transform="rotate(6 50 50)"/>
+      <circle cx="3.6" cy="51" r="4.6" transform="rotate(21 50 50)"/>
+      <circle cx="91" cy="43" r="4.6" transform="rotate(-31 50 50)"/>
+      <circle cx="50" cy="50" r="7.5"/>
+    </g>`;
+  return svg;
+}
+
 function logoLinkedin() {
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("viewBox", "0 0 24 24");
@@ -975,9 +1098,24 @@ function montarRodape(banco) {
   const externo = (href, rotulo, conteudo) => el("a", { class: "rodape-icone", href, target: "_blank", rel: "noopener", "aria-label": rotulo, title: rotulo }, conteudo);
   rodape.replaceChildren(...[
     el("span", {}, txt.feitoPor(c.nome)),
+    marcaAtomo(),
     c.linkedin ? externo(c.linkedin, txt.linkedinDe(c.nome), logoLinkedin()) : null,
     c.site ? externo(c.site, txt.siteDe(c.nome), icone("site")) : null,
   ].filter(Boolean));
+}
+
+function cartaoDoAutor(banco) {
+  const c = banco.contato || {};
+  if (!c.nome) return null;
+  const externo = (href, conteudo) => el("a", { class: "botao", href, target: "_blank", rel: "noopener" }, conteudo);
+  return el("section", { class: "autor", "aria-label": txt.feitoPor(c.nome) },
+    c.foto ? el("img", { class: "autor-foto", src: c.foto, alt: txt.fotoDoAutor(c.nome), width: "560", height: "700" }) : null,
+    el("div", { class: "autor-texto" },
+      marcaAtomo(),
+      el("p", { class: "autor-assinatura" }, txt.feitoPorCurto, el("strong", {}, c.nome)),
+      el("div", { class: "autor-links" },
+        c.linkedin ? externo(c.linkedin, [logoLinkedin(), "LinkedIn"]) : null,
+        c.site ? externo(c.site, [icone("site"), txt.site]) : null)));
 }
 
 // O endereço que vai para o amigo é sempre o do site publicado, mesmo testando no PC
@@ -1157,7 +1295,7 @@ function marcaOcular() {
   svg.innerHTML = `<circle cx="20" cy="21" r="15" fill="none" stroke="var(--primaria)" stroke-width="3"/>
     <path d="M20 1v8M1 21h8" stroke="var(--primaria)" stroke-width="3" stroke-linecap="round"/>
     <circle cx="23" cy="23" r="6.5" fill="var(--eosina)" opacity=".35"/>
-    <circle cx="22.5" cy="22.5" r="3.4" fill="var(--primaria)"/>`;
+    <circle cx="22.5" cy="22.5" r="3.4" fill="var(--nucleo)"/>`;
   return svg;
 }
 
@@ -1289,15 +1427,16 @@ async function telaContagem() {
 
   app.classList.add("largo");
   tela(topo, el("div", { class: "mesa" },
+    cartaoDoAutor(banco),
     painelDePerfis(banco),
     el("div", { class: "mesa-principal" },
     banco.avisos?.length ? el("section", { class: "cartao aviso" }, el("ul", {}, banco.avisos.map((a) => el("li", {}, a)))) : null,
     el("p", { class: "intro" }, txt.comoFunciona),
     el("div", { class: "linha ferramentas" },
-      el("button", { type: "button", onclick: () => configurarTeclas(banco.tipos, () => {}) },
+      el("button", { type: "button", class: "so-teclado", onclick: () => configurarTeclas(banco.tipos, () => {}) },
         icone("teclado"), txt.configurarTeclas),
       el("a", { class: "botao", href: "#historico" }, icone("historico"), txt.historico),
-      el("button", { type: "button", onclick: encaminharParaUmAmigo }, icone("compartilhar"), txt.encaminhar)),
+      el("button", { type: "button", class: "botao-encaminhar", onclick: encaminharParaUmAmigo }, icone("aviao"), txt.encaminhar)),
     el("section", { class: "cartao" },
       el("h2", {}, txt.quantasCelulas),
       escolha(quantas, manual ? "manual" : opcoes.n, txt.quantasCelulas, escolherQuantas),
@@ -1371,9 +1510,10 @@ async function rodadaDeContagem(banco, tipos, opcoes) {
     return { nome, tecla: t, visor };
   });
   const botaoSom = el("button", { type: "button", class: "discreto", onclick: alternarSom });
-  const desfazer = el("button", { type: "button", class: "discreto", onclick: voltar, disabled: true }, txt.desfazer);
+  const desfazer = el("button", { type: "button", class: "discreto", onclick: voltar, disabled: true },
+    txt.desfazer, el("span", { class: "so-teclado" }, txt.desfazerTecla));
 
-  app.classList.add("largo");
+  app.classList.add("largo", "na-rodada");
   tela(
     el("div", { class: "barra-topo" },
       el("a", { class: "voltar", href: "#",
@@ -1553,7 +1693,7 @@ function resultadoDaContagem(r, celulas, tipos, contexto = {}) {
       inteiro(registro.itens.length), inteiro(registro.n)))
     : null;
 
-  app.classList.remove("largo");
+  app.classList.remove("largo", "na-rodada");
   tela(
     doHistorico
       ? cabecalho(txt.contagemDe(quandoFoi(registro.fim)), seletorDeIdioma(opcoes.idioma, trocarIdioma), { href: "#historico", texto: txt.historico })
@@ -1572,7 +1712,7 @@ function resultadoDaContagem(r, celulas, tipos, contexto = {}) {
           el("td", {}, `${txt.numero(l.contado_pct)}%`),
           el("td", { class: "coluna-barras" }, barra(l.real_pct, "real", l.celula), barra(l.contado_pct, "contado", l.celula)),
           el("td", {}, dif(l)))))),
-      el("p", { class: "suave pequeno" }, txt.legendaBarras)),
+      el("p", { class: "suave pequeno legenda-barras" }, txt.legendaBarras)),
     r.a_parte.length ? el("section", { class: "cartao" },
       el("h2", {}, txt.aParte),
       el("p", { class: "suave pequeno" }, txt.aParteComo),
@@ -1775,7 +1915,7 @@ async function telaContagemDoHistorico(id) {
 
 function rotear() {
   if (aoSair) { aoSair(); aoSair = null; }
-  app.classList.remove("largo");
+  app.classList.remove("largo", "na-rodada");
   const rota = decodeURIComponent(location.hash.slice(1));
   let carregando;
   if (rota === "rodada") carregando = telaRodadaContagem();

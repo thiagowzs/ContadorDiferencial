@@ -5,10 +5,12 @@
     "(em preparação). O painel ordena pelo nome, então a ordem aqui não importa.",
     "\"ingles\": o nome com o contador em inglês. \"completo\" e \"completo_ingles\": o nome por extenso, para as siglas.",
     "\"contato\": quem fez o contador. O e-mail aparece no convite das lâminas em branco; o nome, o LinkedIn",
-    "e o site (\"site\", quando houver) aparecem no rodapé de todas as telas."
+    "e o site (\"site\", quando houver) aparecem no rodapé de todas as telas; com a \"foto\" (um arquivo em docs/),",
+    "também no cartão do autor na tela de opções."
   ],
   "contato": {
     "nome": "Thiago Gomes",
+    "foto": "autor.webp",
     "email": "thi.gomes.santos2@gmail.com",
     "linkedin": "https://www.linkedin.com/in/thiago-gomes-579638109/"
   },
