@@ -4,47 +4,58 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Contador Diferencial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap">
 <style>
 /* ── variáveis ─────────────────────────────────────────── */
+/* As cores vêm da coloração do esfregaço: o violeta-azur dos núcleos nas ações, a eosina como acento,
+   o lilás do vidro no fundo. */
 :root {
-  --fundo: #f3f5f9;
-  --fundo-brilho: #e6ecfb;
+  --fundo: #f1f0f6;
+  --bandeja: #e5e2ee;
   --superficie: #ffffff;
-  --superficie-2: #f7f9fc;
-  --texto: #161a22;
-  --suave: #5b6372;
-  --borda: #dfe4ec;
-  --primaria: #2f5fe0;
-  --primaria-forte: #2149bd;
+  --superficie-2: #f7f6fb;
+  --texto: #221b33;
+  --suave: #665e7c;
+  --borda: #ddd8e8;
+  --primaria: #4a2c83;
+  --primaria-forte: #36206a;
   --primaria-texto: #ffffff;
-  --primaria-suave: #e8eefc;
-  --contagem: #b4235a;
-  --contagem-suave: #fbe7ef;
+  --primaria-suave: #ece6f7;
+  --eosina: #d6457a;
+  --vidro: rgba(255,255,255,.62);
+  --vidro-borda: rgba(110,98,145,.3);
+  --fosco: #ebe8f1;
+  --fosco-risco: rgba(255,255,255,.45);
   --certo: #1c7543;
   --certo-fundo: #e3f3e8;
   --erro: #b42318;
   --erro-fundo: #fbe8e6;
   --aviso: #7a5100;
   --aviso-fundo: #fcf1d6;
-  --raio: 18px;
-  --raio-botao: 14px;
-  --sombra: 0 1px 2px rgba(16,24,40,.05), 0 6px 20px rgba(16,24,40,.06);
-  --sombra-alta: 0 2px 4px rgba(16,24,40,.06), 0 14px 32px rgba(16,24,40,.12);
+  --raio: 12px;
+  --raio-botao: 10px;
+  --sombra: 0 1px 2px rgba(34,27,51,.06);
+  --sombra-alta: 0 2px 4px rgba(34,27,51,.06), 0 14px 32px rgba(34,27,51,.14);
+  --fonte: "Archivo", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --fundo: #0e1015; --fundo-brilho: #172036;
-    --superficie: #181b22; --superficie-2: #1e222b;
-    --texto: #e8eaee; --suave: #9ca3ae; --borda: #2b303a;
-    --primaria: #7ea3ff; --primaria-forte: #a3bdff;
-    --primaria-texto: #0b1020; --primaria-suave: #1c2744;
-    --contagem: #f17aa6; --contagem-suave: #3a1626;
+    --fundo: #15121d; --bandeja: #0f0d15;
+    --superficie: #1e1a29; --superficie-2: #262134;
+    --texto: #ece8f5; --suave: #a69ebc; --borda: #352e47;
+    --primaria: #b9a2f5; --primaria-forte: #d3c4fa;
+    --primaria-texto: #1a1230; --primaria-suave: #2c2346;
+    --eosina: #f07fa8;
+    --vidro: rgba(255,255,255,.09); --vidro-borda: rgba(185,162,245,.24);
+    --fosco: #2c2740; --fosco-risco: rgba(255,255,255,.04);
     --certo: #62d394; --certo-fundo: #142c1d;
     --erro: #ff8b7b; --erro-fundo: #3a1916;
     --aviso: #f1c35d; --aviso-fundo: #332811;
-    --sombra: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
-    --sombra-alta: 0 2px 4px rgba(0,0,0,.35), 0 16px 36px rgba(0,0,0,.4);
+    --sombra: 0 1px 2px rgba(0,0,0,.35);
+    --sombra-alta: 0 2px 4px rgba(0,0,0,.35), 0 16px 36px rgba(0,0,0,.45);
     color-scheme: dark;
   }
 }
@@ -53,9 +64,9 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background: radial-gradient(1200px 520px at 50% -180px, var(--fundo-brilho), transparent 70%) no-repeat, var(--fundo);
+  background: var(--fundo);
   color: var(--texto);
-  font: 17px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font: 16.5px/1.55 var(--fonte);
   -webkit-text-size-adjust: 100%;
 }
 main {
@@ -65,8 +76,10 @@ main {
     max(72px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));
 }
 main.largo { max-width: 1080px; }
-h1 { font-size: 1.85rem; line-height: 1.2; letter-spacing: -.015em; font-weight: 800; margin: 6px 0 20px; }
-h2 { font-size: 1.2rem; letter-spacing: -.01em; margin: 0 0 8px; }
+h1 { font-size: 1.85rem; line-height: 1.15; letter-spacing: -.015em; font-weight: 800; font-stretch: 112%; margin: 6px 0 20px; }
+h2 { font-size: 1.22rem; line-height: 1.25; letter-spacing: -.005em; font-weight: 720; font-stretch: 108%; margin: 0 0 10px; }
+h3 { font-size: .95rem; font-weight: 700; margin: 0 0 6px; }
+.so-leitor { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 p { margin: 0 0 12px; }
 a { color: var(--primaria); }
 .suave { color: var(--suave); }
@@ -82,13 +95,12 @@ a { color: var(--primaria); }
   padding: 20px;
   margin: 0 0 18px;
 }
-.cartao.destaque { background: linear-gradient(160deg, var(--primaria-suave), var(--superficie) 60%); }
 .cartao.aviso { background: var(--aviso-fundo); color: var(--aviso); border-color: transparent; box-shadow: none; }
 .cartao.aviso ul { margin: 8px 0; padding-left: 20px; }
 /* ── botões ────────────────────────────────────────────── */
 button, .botao {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  min-height: 52px; padding: 12px 22px;
+  min-height: 48px; padding: 10px 20px;
   border: 1px solid var(--borda); border-radius: var(--raio-botao);
   background: var(--superficie); color: var(--texto);
   font: inherit; font-weight: 600; text-decoration: none; cursor: pointer;
@@ -97,12 +109,10 @@ button, .botao {
 button:hover:not(:disabled), .botao:hover { border-color: color-mix(in srgb, var(--primaria) 45%, var(--borda)); box-shadow: 0 2px 8px rgba(16,24,40,.08); }
 button:active:not(:disabled), .botao:active { transform: translateY(1px) scale(.99); }
 button.primario, .botao.primario {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--primaria) 88%, white), var(--primaria));
-  border-color: var(--primaria); color: var(--primaria-texto); font-weight: 700;
-  box-shadow: 0 4px 14px color-mix(in srgb, var(--primaria) 30%, transparent);
+  background: var(--primaria); border-color: var(--primaria); color: var(--primaria-texto); font-weight: 700;
 }
-button.primario:hover:not(:disabled) { background: var(--primaria-forte); border-color: var(--primaria-forte); box-shadow: 0 6px 18px color-mix(in srgb, var(--primaria) 38%, transparent); }
-button.grande, .botao.grande { min-height: 60px; padding: 14px 30px; font-size: 1.12rem; border-radius: 16px; }
+button.primario:hover:not(:disabled), .botao.primario:hover { background: var(--primaria-forte); border-color: var(--primaria-forte); box-shadow: none; }
+button.grande, .botao.grande { min-height: 56px; padding: 14px 28px; font-size: 1.08rem; }
 button.discreto { min-height: 44px; border-color: transparent; background: none; color: var(--suave); font-size: .95rem; font-weight: 500; box-shadow: none; }
 button.discreto:hover:not(:disabled) { color: var(--texto); background: var(--superficie-2); }
 button:disabled { opacity: .45; cursor: default; }
@@ -163,23 +173,77 @@ body.sem-rolar { overflow: hidden; }
 /* ══════════════════════════════════════════════════════════
    CONTAGEM DE CÉLULAS
    ══════════════════════════════════════════════════════════ */
-/* ── opções ────────────────────────────────────────────── */
-.previa-teclas { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 12px; margin: 14px 0 12px; }
-.previa-tecla {
-  position: relative; display: flex; flex-direction: column; align-items: center;
-  gap: 2px; padding: 12px 10px 10px;
-  border: 1px solid var(--borda); border-top: 5px solid var(--tecla); border-radius: 14px;
-  background: var(--superficie); text-align: center;
+/* ── opções: a plaqueta do título ──────────────────────── */
+.placa { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 0 20px; margin-bottom: 26px; border-bottom: 1px solid var(--borda); }
+.placa-marca { display: flex; align-items: center; gap: 12px; }
+.placa-marca svg { width: 38px; height: 38px; flex: none; }
+.placa h1 { margin: 0; font-size: clamp(1.5rem, 3.4vw, 2.15rem); line-height: 1; font-weight: 820; font-stretch: 125%; letter-spacing: -.02em; }
+.titulo-tela { margin: 0; font-size: 1.35rem; font-stretch: 112%; }
+/* ── opções: a mesa (o laminário ao lado das opções) ──── */
+.mesa { display: grid; grid-template-columns: 276px minmax(0, 1fr); gap: 32px; align-items: start; }
+.mesa-principal { min-width: 0; max-width: 700px; }
+.intro { max-width: 60ch; margin: 0 0 16px; font-size: 1.12rem; line-height: 1.5; }
+.ferramentas { margin-bottom: 22px; }
+.letra-miuda { max-width: 70ch; margin: 0; color: var(--suave); font-size: .84rem; }
+/* O laminário: cada perfil é uma lâmina. A ponta fosca leva o nome; o esfregaço corado diz que o perfil
+   está pronto, e a lâmina em branco, que ainda não tem células. */
+.laminario {
+  padding: 16px 14px 18px; border-radius: var(--raio);
+  background: var(--bandeja); box-shadow: inset 0 1px 3px rgba(34,27,51,.12);
 }
-.previa-tecla img { width: 76px; height: 76px; margin-bottom: 6px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 3px color-mix(in srgb, var(--tecla) 25%, transparent); }
-.previa-tecla strong { font-size: .92rem; line-height: 1.25; }
-.previa-tecla kbd { position: absolute; top: 8px; right: 8px; }
-.previa-tecla kbd[hidden] { display: none; }
+.laminario h2 { margin: 0 0 12px; font-size: 1.05rem; }
+.laminario h3 { margin: 18px 0 2px; color: var(--suave); font-size: .86rem; font-weight: 650; }
+.laminario-nota { margin: 0 0 10px; color: var(--suave); font-size: .78rem; line-height: 1.4; }
+.laminas { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.lamina {
+  display: grid; grid-template-columns: minmax(0, 1fr) 62px; min-height: 46px;
+  border: 1px solid var(--vidro-borda); border-radius: 3px;
+  background: var(--vidro); box-shadow: inset 0 1px 0 rgba(255,255,255,.5), 0 1px 1px rgba(34,27,51,.06);
+}
+.lamina-etiqueta {
+  display: flex; flex-direction: column; justify-content: center; min-width: 0; padding: 5px 10px;
+  border-right: 1px solid var(--vidro-borda);
+  background: var(--fosco) repeating-linear-gradient(45deg, var(--fosco-risco) 0 1px, transparent 1px 4px);
+}
+.lamina-nome { font-size: .9rem; font-weight: 640; font-stretch: 88%; line-height: 1.2; }
+.lamina-detalhe { color: var(--suave); font-size: .72rem; line-height: 1.25; }
+.lamina:not(.pronta) .lamina-nome { color: color-mix(in srgb, var(--texto) 72%, var(--suave)); }
+.lamina.pronta .lamina-esfregaco {
+  background:
+    radial-gradient(circle at 34% 38%, var(--primaria) 0 1.7px, transparent 2.2px),
+    radial-gradient(circle at 58% 64%, var(--primaria) 0 1.4px, transparent 1.9px),
+    radial-gradient(ellipse 78% 66% at 40% 50%, color-mix(in srgb, var(--eosina) 50%, transparent), color-mix(in srgb, var(--eosina) 18%, transparent) 58%, transparent 74%);
+}
+.lamina[aria-current="true"] { border-color: var(--primaria); box-shadow: 0 0 0 2px color-mix(in srgb, var(--primaria) 28%, transparent); }
+button.lamina {
+  width: 100%; gap: 0; padding: 0; justify-content: stretch; align-items: stretch;
+  color: inherit; font-weight: 400; text-align: left;
+  transition: border-color .15s, box-shadow .15s;
+}
+button.lamina:hover:not(:disabled) { border-color: var(--primaria); box-shadow: 0 0 0 1px var(--primaria); }
+button.lamina:active:not(:disabled) { transform: none; }
+button.lamina[aria-expanded="true"] { border-color: var(--eosina); box-shadow: 0 0 0 1px var(--eosina); }
+.convite {
+  margin: 6px 0 4px; padding: 12px 12px 14px;
+  border: 1px solid var(--borda); border-left: 3px solid var(--eosina); border-radius: 8px;
+  background: var(--superficie); font-size: .86rem; line-height: 1.45;
+  animation: convite-abre .18s ease-out;
+}
+@keyframes convite-abre { from { opacity: 0; transform: translateY(-4px); } }
+.convite p { margin: 0 0 10px; }
+.convite .botao { width: 100%; min-height: 40px; padding: 8px 14px; font-size: .88rem; }
+.convite-email { display: block; margin-top: 6px; color: var(--suave); font-size: .76rem; text-align: center; overflow-wrap: anywhere; }
+@media (max-width: 880px) {
+  .mesa { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .laminario { order: 2; }
+}
+/* ── opções ────────────────────────────────────────────── */
 .escolhas { display: flex; flex-wrap: wrap; gap: 10px; }
-.escolha-item { flex-direction: column; align-items: flex-start; gap: 0; min-width: 88px; min-height: 60px; padding: 10px 18px; text-align: left; }
-.escolha-item span { font-size: .82rem; font-weight: 500; color: var(--suave); }
-.escolha-item.ativa { border-color: var(--primaria); background: var(--primaria-suave); box-shadow: 0 0 0 2px color-mix(in srgb, var(--primaria) 30%, transparent); }
-.escolha-item.ativa strong { color: var(--primaria); }
+.escolha-item { flex-direction: column; align-items: flex-start; gap: 0; min-width: 84px; min-height: 58px; padding: 9px 18px; text-align: left; }
+.escolha-item strong { font-variant-numeric: tabular-nums; }
+.escolha-item span { font-size: .8rem; font-weight: 500; color: var(--suave); }
+.escolha-item.ativa, .escolha-item.ativa:hover:not(:disabled) { border-color: var(--primaria); background: var(--primaria); color: var(--primaria-texto); box-shadow: none; }
+.escolha-item.ativa span { color: color-mix(in srgb, var(--primaria-texto) 78%, transparent); }
 .espaco-acima { margin-top: 22px; }
 .largo-total { width: 100%; margin-top: 22px; }
 .largo-total:disabled { opacity: .5; cursor: not-allowed; }
@@ -290,8 +354,8 @@ body.sem-rolar { overflow: hidden; }
   color: #1d2028; transform: translateY(-6px);
   transition: transform .07s, box-shadow .07s;
 }
-.nome-tecla { max-width: 100%; font-size: .95rem; font-weight: 750; line-height: 1.2; text-align: center; }
-.nome-tecla.longo { font-size: .8rem; letter-spacing: -.01em; }
+.nome-tecla { max-width: 100%; font-size: .98rem; font-weight: 760; font-stretch: 82%; line-height: 1.15; text-align: center; }
+.nome-tecla.longo { font-stretch: 68%; }
 .tampo-tecla kbd { border-color: #cfc8b8; background: #f3efe5; color: #6b6555; }
 .tecla:active .tampo-tecla { transform: translateY(0); box-shadow: 0 0 0 #b9b3a4, 0 2px 4px rgba(0,0,0,.35); }
 .tecla.apertada .tampo-tecla { animation: tecla-aperta .2s ease-out; }
@@ -315,6 +379,24 @@ body.sem-rolar { overflow: hidden; }
 .trocas li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 10px 0; border-bottom: 1px solid var(--borda); }
 .trocas li:last-child { border-bottom: 0; }
 .trocas .vezes { margin-left: auto; padding: 2px 10px; border-radius: 999px; background: var(--superficie-2); font-weight: 700; }
+/* ── histórico ─────────────────────────────────────────── */
+.lista-historico { margin: 0; padding: 0; list-style: none; }
+.lista-historico a {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px;
+  padding: 14px 8px; border-bottom: 1px solid var(--borda); border-radius: 10px;
+  color: var(--texto); text-decoration: none;
+}
+.lista-historico li:last-child a { border-bottom: 0; }
+.lista-historico a:hover { background: var(--superficie-2); }
+.historico-quando { min-width: 8.5em; font-weight: 650; font-variant-numeric: tabular-nums; }
+.historico-detalhe { flex: 1; min-width: 10em; color: var(--suave); font-size: .9rem; }
+.historico-nota { min-width: 3.2em; text-align: right; font-weight: 800; font-variant-numeric: tabular-nums; }
+.historico-nota.ok { color: var(--certo); }
+.historico-nota.medio { color: var(--aviso); }
+.historico-nota.erro { color: var(--erro); }
+.selo { padding: 2px 10px; border-radius: 999px; background: var(--aviso-fundo); color: var(--aviso); font-size: .78rem; font-weight: 700; }
+.selo.alterado { background: var(--erro-fundo); color: var(--erro); }
+.cartao.alerta { background: var(--erro-fundo); color: var(--erro); border-color: transparent; box-shadow: none; font-weight: 600; }
 .galeria-erros { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 14px; }
 .galeria-erros figure { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 0; text-align: center; }
 .galeria-erros img { width: 112px; height: 112px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 3px var(--borda); }
@@ -332,7 +414,7 @@ body.sem-rolar { overflow: hidden; }
   .tecla.apertada .tampo-tecla, .tecla.apertada .visor-tecla,
   .campo-contagem.terminou .ocular-contagem,
   .sobreposicao.janela-teclas .botao-tecla.esperando { animation: none; }
-  .toast { animation: none; }
+  .toast, .convite { animation: none; }
 }
 </style>
 </head>
@@ -369,7 +451,7 @@ function tela(...nos) {
 function cabecalho(titulo, direita = null, volta = null) {
   const esq = el("div", { class: "linha", style: "gap: 6px" },
     volta ? el("a", { class: "voltar", href: volta.href }, `← ${volta.texto}`) : null,
-    el("h1", { style: "margin: 0; font-size: 1.35rem" }, titulo));
+    el("h1", { class: "titulo-tela" }, titulo));
   return el("div", { class: "barra-topo" }, esq, direita || el("span", {}));
 }
 
@@ -389,6 +471,7 @@ function pct(acertos, total) {
 }
 
 const ICONES = {
+  historico: ["M3 12a9 9 0 1 0 2.6-6.4", "M3 4v4h4", "M12 7v5l3 2"],
   teclado: ["M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z",
     "M6 10h.01", "M10 10h.01", "M14 10h.01", "M18 10h.01", "M8 14h8"],
 };
@@ -483,8 +566,16 @@ function _shuffle(arr) {
   return arr;
 }
 
+// As células de uma rodada normal: as que têm imagem e entram no diferencial. Se alguma tem
+// faixa de referência, só as com faixa: as outras (blasto, mielócito…) ficam para os perfis de doença.
+function tiposDaRodada(banco) {
+  const comImagem = banco.tipos.filter((t) => t.imagens && !t.a_parte);
+  const comFaixa = comImagem.filter((t) => t.referencia);
+  return comFaixa.length ? comFaixa : comImagem;
+}
+
 function sortearRodadaLocal(banco, n) {
-  const tipos = banco.tipos;
+  const tipos = tiposDaRodada(banco);
   if (!tipos.length) return { celulas: [] };
 
   const comReferencia = tipos.every((t) => t.referencia);
@@ -546,9 +637,14 @@ function corrigirContagemLocal(banco, respostas) {
     return { codigo: r.codigo, real, contou: r.contou };
   });
   const total = itens.length;
+  const aParte = new Set(banco.tipos.filter((t) => t.a_parte).map((t) => t.nome));
   const reais = {}, contados = {};
   for (const nome of nomes) { reais[nome] = 0; contados[nome] = 0; }
   for (const i of itens) { reais[i.real]++; if (i.contou) contados[i.contou]++; }
+  // O diferencial é sobre os leucócitos: os reais da rodada e o que você contou como leucócito
+  // (a que passou sem contar entra, como antes; a que você contou como eritroblasto, não)
+  const leucocitosReais = itens.filter((i) => !aParte.has(i.real)).length;
+  const leucocitosContados = itens.filter((i) => !aParte.has(i.contou)).length;
   const trocasMap = {};
   for (const i of itens) {
     if (i.contou && i.contou !== i.real) {
@@ -556,14 +652,19 @@ function corrigirContagemLocal(banco, respostas) {
       trocasMap[k] = (trocasMap[k] || 0) + 1;
     }
   }
-  const pct2 = (k) => total ? Math.round(1000 * k / total) / 10 : 0;
+  const pct2 = (k, de) => de ? Math.round(1000 * k / de) / 10 : 0;
   return {
     total,
     certas: itens.filter((i) => i.contou === i.real).length,
     nao_contadas: itens.filter((i) => i.contou === null).length,
     tabela: nomes
-      .filter((n) => reais[n] || contados[n])
-      .map((n) => ({ celula: n, real: reais[n], contado: contados[n], real_pct: pct2(reais[n]), contado_pct: pct2(contados[n]) })),
+      .filter((n) => !aParte.has(n) && (reais[n] || contados[n]))
+      .map((n) => ({ celula: n, real: reais[n], contado: contados[n],
+        real_pct: pct2(reais[n], leucocitosReais), contado_pct: pct2(contados[n], leucocitosContados) })),
+    // por 100 leucócitos, como o eritroblasto sai no laudo
+    a_parte: nomes
+      .filter((n) => aParte.has(n) && (reais[n] || contados[n]))
+      .map((n) => ({ celula: n, real: pct2(reais[n], leucocitosReais), contado: pct2(contados[n], leucocitosContados) })),
     trocas: Object.entries(trocasMap)
       .map(([k, v]) => { const [a, b] = k.split("|||"); return { real: a, contou: b, vezes: v }; })
       .sort((a, b) => b.vezes - a.vezes),
@@ -584,7 +685,8 @@ const RITMOS = [
   { id: "medio", segundos: 2 },
   { id: "rapido", segundos: 1.2 },
 ];
-const CORES_TECLA = ["#2563eb","#e11d48","#16a34a","#d97706","#7c3aed","#0891b2","#db2777","#65a30d","#ea580c","#4f46e5"];
+const CORES_TECLA = ["#2563eb","#e11d48","#16a34a","#d97706","#7c3aed","#0891b2","#db2777","#65a30d","#ea580c","#4f46e5",
+  "#0d9488","#92400e","#c026d3","#475569","#0284c7","#059669"];
 const IDIOMAS = [{ id: "pt", nome: "PT-BR", lang: "pt-BR" }, { id: "en", nome: "English", lang: "en" }];
 
 const TEXTOS = {
@@ -600,10 +702,14 @@ const TEXTOS = {
     nomeDaPasta: "O nome da pasta vira o nome da tecla. Formatos: JPG, PNG, WebP, GIF ou BMP.",
     comoFunciona: "As células passam uma de cada vez sob a ocular. Aperte a tecla de cada uma, como no contador de bancada. No fim, a porcentagem real aparece ao lado da que você contou.",
     imagens: (n) => `${n.toLocaleString("pt-BR")} ${n === 1 ? "imagem" : "imagens"}`,
-    faixa: (min, max) => `${min}–${max}% no adulto`,
     resumoTeclas: (celulas, imagens) => `${celulas} células, ${imagens}. `,
+    resumoTeclasParcial: (teclas, celulas, imagens) => `${teclas} teclas no pianinho. As rodadas usam as ${celulas} que têm imagem (${imagens}). `,
     proporcaoReferencia: "A proporção muda a cada rodada, sempre dentro dos valores de referência do adulto.",
     proporcaoAoAcaso: "A proporção de cada uma muda a cada rodada.",
+    deixadasDeFora: (fora, rep) => [
+      fora ? `${fora.toLocaleString("pt-BR")} imagens de pastas sem tecla ficaram de fora` : null,
+      rep ? `${rep.toLocaleString("pt-BR")} repetidas foram ignoradas` : null,
+    ].filter(Boolean).join("; ").replace(/^(.)/, (c) => c.toUpperCase()).replace(/(.)$/, "$1."),
     configurarTeclas: "Configurar teclas",
     quantasCelulas: "Quantas células",
     outra: "Outra",
@@ -649,8 +755,40 @@ const TEXTOS = {
     erradas: (n) => (n === 1 ? "A que não foi na tecla certa" : `As ${n} que não foram na tecla certa`),
     voceContou: (c) => `você contou ${c}`,
     passouSemContar: "passou sem contar",
+    aParte: "Contados à parte",
+    aParteComo: "Não entram no diferencial dos leucócitos: saem por 100 leucócitos.",
+    porCem: (v) => `${v} por 100 leucócitos`,
+    contouPorCem: (v) => `você contou ${v}`,
     contarDeNovo: "Contar de novo",
     mudarOpcoes: "Mudar as opções",
+    perfis: "Perfis de doença",
+    sangueNormal: "Sangue normal",
+    sangueNormalDetalhe: (n) => `em uso, ${n} células`,
+    doencas: (n) => `Doenças (${n})`,
+    laminaEmBranco: "As lâminas em branco ainda não têm fotos. Toque numa delas para saber como contribuir.",
+    emPreparacao: "sem fotos ainda",
+    semRegistros: "Ainda não temos registros dessa doença no nosso banco de imagens. Que tal contribuir com algumas fotos ou casos?",
+    entrarEmContato: "Entrar em contato por e-mail",
+    assuntoContribuicao: (d) => `Fotos para o Contador Diferencial: ${d}`,
+    corpoContribuicao: (d) => `Olá! Tenho fotos de ${d} para o Contador Diferencial.\n\nDe onde vêm as imagens:\nColoração:\nAutorizo o uso das imagens no site (sim ou não):\n`,
+    historico: "Histórico",
+    verHistorico: "Ver o histórico",
+    historicoComo: "Cada contagem fica guardada neste navegador assim que termina, e o contador não deixa editar nem apagar. A contagem abandonada no meio também fica.",
+    historicoVazio: "Nenhuma contagem ainda. Cada rodada que você terminar aparece aqui.",
+    resumoHistorico: (n, media) => `${n.toLocaleString("pt-BR")} ${n === 1 ? "contagem" : "contagens"}.${media === null ? "" : ` Média de ${media}% de acerto nas completas.`}`,
+    linhaCompleta: (n, ritmo) => `${n} células, ${ritmo.toLowerCase()}`,
+    linhaParcial: (c, n) => `${c} de ${n} células`,
+    estados: { abandonada: "abandonada", interrompida: "interrompida" },
+    alterada: "alterada",
+    ilegivel: "registro ilegível",
+    historicoAlterado: "Parte deste histórico foi alterada fora do contador. As contagens marcadas como alteradas não são confiáveis.",
+    registroAlterado: "Esta contagem foi alterada fora do contador e não é confiável.",
+    naoBateComOBanco: "Alguma célula desta contagem não bate com o banco de imagens atual.",
+    contagemDe: (quando) => `Contagem de ${quando}`,
+    estadoAbandonada: (c, n) => `Abandonada depois de ${c} de ${n} células.`,
+    estadoInterrompida: (c, n) => `Interrompida (a página fechou) depois de ${c} de ${n} células.`,
+    naoGuardou: (m) => `Não deu para guardar no histórico: ${m}`,
+    naoEncontrada: "Essa contagem não está no histórico.",
   },
   en: {
     local: "en-US",
@@ -664,10 +802,14 @@ const TEXTOS = {
     nomeDaPasta: "The folder name becomes the key name. Formats: JPG, PNG, WebP, GIF or BMP.",
     comoFunciona: "Cells pass under the eyepiece one at a time. Press the key for each one, as on a bench counter. At the end, the actual percentage appears next to the one you counted.",
     imagens: (n) => `${n.toLocaleString("en-US")} ${n === 1 ? "image" : "images"}`,
-    faixa: (min, max) => `${min}–${max}% in adults`,
     resumoTeclas: (c, i) => `${c} cells, ${i}. `,
+    resumoTeclasParcial: (teclas, c, i) => `${teclas} keys on the counter. Rounds use the ${c} that have images (${i}). `,
     proporcaoReferencia: "Proportions change every round, always within adult reference ranges.",
     proporcaoAoAcaso: "Each cell's proportion changes every round.",
+    deixadasDeFora: (fora, rep) => [
+      fora ? `${fora.toLocaleString("en-US")} images from folders without a key were left out` : null,
+      rep ? `${rep.toLocaleString("en-US")} duplicates were ignored` : null,
+    ].filter(Boolean).join("; ").replace(/^(.)/, (c) => c.toUpperCase()).replace(/(.)$/, "$1."),
     configurarTeclas: "Set up keys",
     quantasCelulas: "How many cells",
     outra: "Custom",
@@ -713,8 +855,40 @@ const TEXTOS = {
     erradas: (n) => (n === 1 ? "The one on the wrong key" : `The ${n} on the wrong key`),
     voceContou: (c) => `you counted ${c}`,
     passouSemContar: "passed uncounted",
+    aParte: "Counted separately",
+    aParteComo: "Not part of the white cell differential: reported per 100 leukocytes.",
+    porCem: (v) => `${v} per 100 leukocytes`,
+    contouPorCem: (v) => `you counted ${v}`,
     contarDeNovo: "Count again",
     mudarOpcoes: "Change options",
+    perfis: "Disease profiles",
+    sangueNormal: "Normal blood",
+    sangueNormalDetalhe: (n) => `in use, ${n} cells`,
+    doencas: (n) => `Diseases (${n})`,
+    laminaEmBranco: "Blank slides have no photos yet. Tap one to find out how to contribute.",
+    emPreparacao: "no photos yet",
+    semRegistros: "We don't have any records of this disease in our image bank yet. Would you like to contribute some photos or cases?",
+    entrarEmContato: "Get in touch by email",
+    assuntoContribuicao: (d) => `Photos for the Differential Counter: ${d}`,
+    corpoContribuicao: (d) => `Hi! I have photos of ${d} for the Differential Counter.\n\nWhere the images come from:\nStain:\nI allow the images to be used on the site (yes or no):\n`,
+    historico: "History",
+    verHistorico: "See history",
+    historicoComo: "Every count is saved in this browser as soon as it ends, and the counter has no way to edit or delete it. Counts abandoned halfway are saved too.",
+    historicoVazio: "No counts yet. Every round you finish shows up here.",
+    resumoHistorico: (n, media) => `${n.toLocaleString("en-US")} ${n === 1 ? "count" : "counts"}.${media === null ? "" : ` ${media}% average accuracy on finished counts.`}`,
+    linhaCompleta: (n, ritmo) => `${n} cells, ${ritmo.toLowerCase()}`,
+    linhaParcial: (c, n) => `${c} of ${n} cells`,
+    estados: { abandonada: "abandoned", interrompida: "interrupted" },
+    alterada: "tampered",
+    ilegivel: "unreadable record",
+    historicoAlterado: "Part of this history was changed outside the counter. Counts marked as tampered are not reliable.",
+    registroAlterado: "This count was changed outside the counter and is not reliable.",
+    naoBateComOBanco: "Some cell in this count does not match the current image bank.",
+    contagemDe: (quando) => `Count from ${quando}`,
+    estadoAbandonada: (c, n) => `Abandoned after ${c} of ${n} cells.`,
+    estadoInterrompida: (c, n) => `Interrupted (the page closed) after ${c} of ${n} cells.`,
+    naoGuardou: (m) => `Could not save to history: ${m}`,
+    naoEncontrada: "This count is not in the history.",
   },
 };
 
@@ -857,6 +1031,73 @@ function somDaContagem() {
   };
 }
 
+// A marca da plaqueta: o retículo da ocular, com uma célula no campo
+function marcaOcular() {
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("viewBox", "0 0 40 40");
+  svg.setAttribute("aria-hidden", "true");
+  svg.innerHTML = `<circle cx="20" cy="21" r="15" fill="none" stroke="var(--primaria)" stroke-width="3"/>
+    <path d="M20 1v8M1 21h8" stroke="var(--primaria)" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="23" cy="23" r="6.5" fill="var(--eosina)" opacity=".35"/>
+    <circle cx="22.5" cy="22.5" r="3.4" fill="var(--primaria)"/>`;
+  return svg;
+}
+
+function nomeDoPerfil(p) {
+  return txt === TEXTOS.en ? (p.ingles || p.nome) : p.nome;
+}
+
+// O laminário: o sangue normal (o perfil em uso) e os perfis de doença em ordem alfabética
+function painelDePerfis(banco) {
+  const ordem = new Intl.Collator(txt.local, { sensitivity: "base" });
+  const ingles = txt === TEXTOS.en;
+  const perfis = (banco.perfis || []).map((p) => ({ ...p, rotulo: nomeDoPerfil(p) }))
+    .sort((a, b) => ordem.compare(a.rotulo, b.rotulo));
+  const conteudo = (nome, detalhe, pronta) => [
+    el("span", { class: "lamina-etiqueta" },
+      el("span", { class: "lamina-nome" }, nome),
+      detalhe ? el("span", { class: "lamina-detalhe" }, detalhe) : null,
+      pronta ? null : el("span", { class: "so-leitor" }, `, ${txt.emPreparacao}`)),
+    el("span", { class: "lamina-esfregaco", "aria-hidden": "true" }),
+  ];
+  const lamina = ({ nome, detalhe, pronta, atual }) => el("li", {
+    class: `lamina${pronta ? " pronta" : ""}`, "aria-current": atual ? "true" : null,
+  }, conteudo(nome, detalhe, pronta));
+
+  // A lâmina em branco abre, logo abaixo dela, o convite para mandar fotos (uma aberta por vez)
+  const email = banco.contato?.email;
+  let aberta = null;
+  const laminaEmBranco = (p, i) => {
+    const convite = el("div", { class: "convite", id: `convite-${i}`, hidden: true },
+      el("p", {}, txt.semRegistros),
+      email ? [
+        el("a", { class: "botao primario", href: `mailto:${email}?subject=${encodeURIComponent(txt.assuntoContribuicao(p.rotulo))}&body=${encodeURIComponent(txt.corpoContribuicao(p.rotulo))}` },
+          txt.entrarEmContato),
+        el("span", { class: "convite-email" }, email),
+      ] : null);
+    const botao = el("button", {
+      type: "button", class: "lamina", "aria-expanded": "false", "aria-controls": convite.id,
+      onclick: () => {
+        const abrir = convite.hidden;
+        if (aberta) { aberta.convite.hidden = true; aberta.botao.setAttribute("aria-expanded", "false"); aberta = null; }
+        if (abrir) { convite.hidden = false; botao.setAttribute("aria-expanded", "true"); aberta = { botao, convite }; }
+      },
+    }, conteudo(p.rotulo, ingles ? p.completo_ingles : p.completo, false));
+    return el("li", {}, botao, convite);
+  };
+
+  return el("aside", { class: "laminario", "aria-labelledby": "titulo-perfis" },
+    el("h2", { id: "titulo-perfis" }, txt.perfis),
+    el("ul", { class: "laminas" },
+      lamina({ nome: txt.sangueNormal, detalhe: txt.sangueNormalDetalhe(tiposDaRodada(banco).length), pronta: true, atual: true })),
+    perfis.length ? [
+      el("h3", {}, txt.doencas(perfis.length)),
+      el("p", { class: "laminario-nota" }, txt.laminaEmBranco),
+      el("ul", { class: "laminas" }, perfis.map(laminaEmBranco)),
+    ] : null);
+}
+
 // ── tela: opções da rodada ────────────────────────────────
 async function telaContagem() {
   const banco = await carregarBanco();
@@ -870,9 +1111,11 @@ async function telaContagem() {
   const redesenhar = () => telaContagem().catch(mostrarErro);
   const mudar = (campos) => { guardarOpcoes({ ...opcoesDaContagem(), ...campos }); return redesenhar(); };
 
-  const topo = cabecalho(txt.titulo, seletorDeIdioma(opcoes.idioma, (idioma) => mudar({ idioma })));
+  const topo = el("header", { class: "placa" },
+    el("div", { class: "placa-marca" }, marcaOcular(), el("h1", {}, txt.titulo)),
+    seletorDeIdioma(opcoes.idioma, (idioma) => mudar({ idioma })));
 
-  if (!banco.tipos.length) {
+  if (!banco.tipos.some((t) => t.imagens)) {
     tela(topo,
       banco.avisos?.length ? el("section", { class: "cartao aviso" }, el("ul", {}, banco.avisos.map((a) => el("li", {}, a)))) : null,
       el("section", { class: "cartao" },
@@ -891,16 +1134,8 @@ async function telaContagem() {
       onclick: () => aoEscolher(item.id),
     }, el("strong", {}, item.nome), item.detalhe ? el("span", {}, item.detalhe) : null)));
 
-  const total = banco.tipos.reduce((s, t) => s + t.imagens, 0);
-  const teclas = teclasDasCelulas(banco.tipos.map((t) => t.nome), opcoes.teclas);
-  const kbds = new Map(banco.tipos.map((t) => [t.nome, el("kbd", {}, teclas.has(t.nome) ? rotuloDaTecla(teclas.get(t.nome)) : "")]));
-  const mostrarTeclas = (novas) => {
-    for (const [nome, kbd] of kbds) {
-      kbd.textContent = novas.has(nome) ? rotuloDaTecla(novas.get(nome)) : "";
-      kbd.hidden = !novas.has(nome);
-    }
-  };
-  mostrarTeclas(teclas);
+  const daRodada = tiposDaRodada(banco);
+  const total = daRodada.reduce((s, t) => s + t.imagens, 0);
 
   const comecar = el("button", { class: "primario grande largo-total", onclick: () => iniciarRodada() }, txt.comecar(inteiro(opcoes.n)));
   const erroQuantas = el("p", { class: "erro-quantas", role: "status" });
@@ -931,37 +1166,20 @@ async function telaContagem() {
     });
   };
 
+  // O que o build deixou de fora do banco (as imagens que entraram já estão no resumo das teclas)
   const resumo = banco.resumo || {};
-  const resumoEl = Object.keys(resumo).length ? (() => {
-    const loc = txt.local;
-    const n = (k) => (resumo[k] || 0).toLocaleString(loc);
-    const fora = resumo.fora || 0, rep = resumo.repetida || 0;
-    return el("p", { class: "suave pequeno" },
-      `${n("pasta")} imagens do banco`,
-      fora ? `, ${n("fora")} de pasta sem tecla` : null,
-      rep ? `${fora ? ";" : ","} ${n("repetida")} repetidas ignoradas` : null,
-      ".");
-  })() : null;
+  const deFora = txt.deixadasDeFora(resumo.fora || 0, resumo.repetida || 0);
 
-  tela(topo,
+  app.classList.add("largo");
+  tela(topo, el("div", { class: "mesa" },
+    painelDePerfis(banco),
+    el("div", { class: "mesa-principal" },
     banco.avisos?.length ? el("section", { class: "cartao aviso" }, el("ul", {}, banco.avisos.map((a) => el("li", {}, a)))) : null,
-    el("section", { class: "cartao destaque" },
-      el("p", {}, txt.comoFunciona),
-      el("div", { class: "previa-teclas" }, banco.tipos.map((t, i) => {
-        const ext = t.ext || ".jpg";
-        return el("div", { class: "previa-tecla", style: `--tecla: ${CORES_TECLA[i % CORES_TECLA.length]}` },
-          el("img", { src: `celulas/${t.exemplo}${ext}`, alt: "", loading: "lazy" }),
-          el("strong", {}, nomeDaCelula(t.nome)),
-          el("span", { class: "suave pequeno" }, txt.imagens(t.imagens)),
-          t.referencia ? el("span", { class: "suave pequeno" }, txt.faixa(...t.referencia.map(txt.numero))) : null,
-          kbds.get(t.nome));
-      })),
-      el("div", { class: "linha entre" },
-        el("p", { class: "suave pequeno", style: "margin: 0" }, txt.resumoTeclas(banco.tipos.length, txt.imagens(total)),
-          banco.tipos.every((t) => t.referencia) ? txt.proporcaoReferencia : txt.proporcaoAoAcaso),
-        el("button", { type: "button", onclick: () => configurarTeclas(banco.tipos, mostrarTeclas) },
-          icone("teclado"), txt.configurarTeclas)),
-      resumoEl),
+    el("p", { class: "intro" }, txt.comoFunciona),
+    el("div", { class: "linha ferramentas" },
+      el("button", { type: "button", onclick: () => configurarTeclas(banco.tipos, () => {}) },
+        icone("teclado"), txt.configurarTeclas),
+      el("a", { class: "botao", href: "#historico" }, icone("historico"), txt.historico)),
     el("section", { class: "cartao" },
       el("h2", {}, txt.quantasCelulas),
       escolha(quantas, manual ? "manual" : opcoes.n, txt.quantasCelulas, escolherQuantas),
@@ -970,7 +1188,12 @@ async function telaContagem() {
       el("h2", { class: "espaco-acima" }, txt.ritmo),
       escolha(RITMOS.map((r) => ({ id: r.id, nome: txt.ritmos[r.id][0], detalhe: txt.ritmos[r.id][1] })), opcoes.ritmo, txt.ritmo,
         (ritmo) => mudar({ ritmo })),
-      comecar));
+      comecar),
+    el("p", { class: "letra-miuda" },
+      daRodada.length === banco.tipos.length
+        ? txt.resumoTeclas(banco.tipos.length, txt.imagens(total))
+        : txt.resumoTeclasParcial(banco.tipos.length, daRodada.length, txt.imagens(total)),
+      daRodada.every((t) => t.referencia) ? txt.proporcaoReferencia : txt.proporcaoAoAcaso, deFora ? ` ${deFora}` : ""))));
 }
 
 function inteiro(n) { return n.toLocaleString(txt.local); }
@@ -978,7 +1201,7 @@ function inteiro(n) { return n.toLocaleString(txt.local); }
 // ── a rodada ──────────────────────────────────────────────
 async function telaRodadaContagem() {
   const banco = await carregarBanco();
-  if (!banco.tipos.length) { await telaContagem(); return; }
+  if (!banco.tipos.some((t) => t.imagens)) { await telaContagem(); return; }
   const opcoes = opcoesDaContagem();
   prepararIdioma(opcoes, banco.tipos);
   await rodadaDeContagem(banco, banco.tipos, opcoes);
@@ -990,10 +1213,21 @@ async function rodadaDeContagem(banco, tipos, opcoes) {
 
   const ritmo = RITMOS.find((r) => r.id === opcoes.ritmo) || RITMOS[0];
   const nomes = tipos.map((t) => t.nome);
+  const aParte = new Set(tipos.filter((t) => t.a_parte).map((t) => t.nome));
+  const leucocitos = celulas.filter((c) => !aParte.has(banco.por_codigo[c.codigo])).length;
   const teclasDoTeclado = teclasDasCelulas(nomes, opcoes.teclas);
   const porTecla = new Map([...teclasDoTeclado].map(([n, k]) => [k, n]));
   const respostas = [];
   const contagem = new Map(nomes.map((n) => [n, 0]));
+  const andamento = {
+    id: novoId(), inicio: new Date().toISOString(), ritmo: ritmo.id, teclas: nomes, a_parte: [...aParte],
+    codigos: celulas.map((c) => c.codigo), reais: celulas.map((c) => nomes.indexOf(banco.por_codigo[c.codigo])),
+  };
+  const respostasEmIndices = () => respostas.map((r) => (r === null ? -1 : nomes.indexOf(r)));
+  // A rodada em andamento fica anotada: se a página fechar no meio, ela entra no histórico como interrompida
+  const anotar = () => {
+    try { localStorage.setItem(CHAVE_ANDAMENTO, JSON.stringify({ ...andamento, respostas: respostasEmIndices() })); } catch {}
+  };
   const som = somDaContagem();
   let comSom = opcoes.som !== false;
   let atual = 0, terminou = false, relogio = null;
@@ -1035,7 +1269,7 @@ async function rodadaDeContagem(banco, tipos, opcoes) {
           el("div", { class: "total-pianinho" },
             el("span", { class: "rotulo-visor" }, txt.total),
             totalEl,
-            el("span", { class: "rotulo-visor" }, txt.de(inteiro(celulas.length)))),
+            el("span", { class: "rotulo-visor" }, txt.de(inteiro(leucocitos)))),
           el("div", { class: "linha" }, desfazer)),
         el("div", { class: "teclas" }, teclaEls.map((t) => t.tecla))),
       el("p", { class: "suave pequeno dica-contagem" },
@@ -1062,7 +1296,7 @@ async function rodadaDeContagem(banco, tipos, opcoes) {
     const largura = slots[0].offsetWidth || 200;
     fita.style.transform = `translateX(${campo.clientWidth / 2 - largura / 2 - atual * largura}px)`;
     carregarVizinhas();
-    totalEl.textContent = String(respostas.filter((r) => r !== null).length).padStart(3, "0");
+    totalEl.textContent = String(respostas.filter((r) => r !== null && !aParte.has(r)).length).padStart(3, "0");
     for (const t of teclaEls) t.visor.textContent = String(contagem.get(t.nome));
     desfazer.disabled = !respostas.length || terminou;
   }
@@ -1094,6 +1328,7 @@ async function rodadaDeContagem(banco, tipos, opcoes) {
     if (terminou) return;
     respostas.push(resposta);
     if (resposta === null) slots[atual].classList.add("perdida");
+    anotar();
     atual += 1;
     if (atual >= celulas.length) { fim(); return; }
     posicionar(); iniciarRelogio();
@@ -1103,6 +1338,7 @@ async function rodadaDeContagem(banco, tipos, opcoes) {
     if (!respostas.length || terminou) return;
     const ultima = respostas.pop();
     if (ultima !== null) contagem.set(ultima, contagem.get(ultima) - 1);
+    anotar();
     atual -= 1;
     slots[atual].classList.remove("contada", "perdida");
     posicionar(); iniciarRelogio();
@@ -1120,6 +1356,13 @@ async function rodadaDeContagem(banco, tipos, opcoes) {
     clearTimeout(relogio);
     document.removeEventListener("keydown", aoTecla);
     window.removeEventListener("resize", posicionar);
+    if (terminou) return;
+    // Saiu no meio: com alguma célula contada, a rodada entra no histórico como abandonada
+    terminou = true;
+    if (!respostas.length) { esquecerAndamento(); return; }
+    guardarNoHistorico(registroDe(andamento, respostasEmIndices(), "abandonada"))
+      .catch((erro) => toast(txt.naoGuardou(erro.message)))
+      .finally(esquecerAndamento);
   }
 
   async function fim() {
@@ -1139,15 +1382,20 @@ async function rodadaDeContagem(banco, tipos, opcoes) {
       toast(txt.naoDeuCerto(erro.message));
       return;
     }
+    let registro = null;
+    try { registro = await guardarNoHistorico(registroDe(andamento, respostasEmIndices(), "completa")); }
+    catch (erro) { toast(txt.naoGuardou(erro.message)); }
+    esquecerAndamento();
     if (!campo.isConnected) return;
     sair();
-    resultadoDaContagem(r, celulas, tipos);
+    resultadoDaContagem(r, celulas, tipos, { registro });
   }
 
   document.addEventListener("keydown", aoTecla);
   window.addEventListener("resize", posicionar);
   aoSair = sair;
   pintarSom();
+  anotar();
   requestAnimationFrame(() => {
     fita.classList.add("sem-transicao");
     posicionar();
@@ -1157,7 +1405,9 @@ async function rodadaDeContagem(banco, tipos, opcoes) {
 }
 
 // ── o resultado ───────────────────────────────────────────
-function resultadoDaContagem(r, celulas, tipos) {
+// contexto: { registro } logo depois da rodada; { registro, doHistorico: true, problemas } ao rever uma do histórico
+function resultadoDaContagem(r, celulas, tipos, contexto = {}) {
+  const { registro = null, doHistorico = false, problemas = new Set() } = contexto;
   const opcoes = opcoesDaContagem();
   const urlMap = new Map(celulas.map((c) => [c.codigo, c.url]));
   const cor = new Map(tipos.map((t, i) => [t.nome, CORES_TECLA[i % CORES_TECLA.length]]));
@@ -1178,12 +1428,21 @@ function resultadoDaContagem(r, celulas, tipos) {
   const trocarIdioma = (idioma) => {
     guardarOpcoes({ ...opcoes, idioma });
     prepararIdioma({ idioma }, tipos);
-    resultadoDaContagem(r, celulas, tipos);
+    resultadoDaContagem(r, celulas, tipos, contexto);
   };
+  const estado = registro && registro.estado !== "completa"
+    ? el("p", { class: "cartao aviso" }, (registro.estado === "abandonada" ? txt.estadoAbandonada : txt.estadoInterrompida)(
+      inteiro(registro.itens.length), inteiro(registro.n)))
+    : null;
 
   app.classList.remove("largo");
   tela(
-    cabecalho(txt.resultado, seletorDeIdioma(opcoes.idioma, trocarIdioma), { href: "#", texto: txt.contagem }),
+    doHistorico
+      ? cabecalho(txt.contagemDe(quandoFoi(registro.fim)), seletorDeIdioma(opcoes.idioma, trocarIdioma), { href: "#historico", texto: txt.historico })
+      : cabecalho(txt.resultado, seletorDeIdioma(opcoes.idioma, trocarIdioma), { href: "#", texto: txt.contagem }),
+    problemas.has("alterado") ? el("p", { class: "cartao alerta" }, txt.registroAlterado) : null,
+    problemas.has("banco") ? el("p", { class: "cartao aviso" }, txt.naoBateComOBanco) : null,
+    estado,
     el("section", { class: `cartao resultado-contagem ${faixaDaNota(nota)}` },
       el("div", { class: "placar-contagem" }, placar, el("span", {}, txt.contadasCerto)),
       el("p", {}, txt.certas(inteiro(r.certas), inteiro(r.total)) + (r.nao_contadas ? txt.semContar(r.nao_contadas) : "") + "."),
@@ -1196,6 +1455,14 @@ function resultadoDaContagem(r, celulas, tipos) {
           el("td", { class: "coluna-barras" }, barra(l.real_pct, "real", l.celula), barra(l.contado_pct, "contado", l.celula)),
           el("td", {}, dif(l)))))),
       el("p", { class: "suave pequeno" }, txt.legendaBarras)),
+    r.a_parte.length ? el("section", { class: "cartao" },
+      el("h2", {}, txt.aParte),
+      el("p", { class: "suave pequeno" }, txt.aParteComo),
+      el("ul", { class: "trocas" }, r.a_parte.map((l) => el("li", {},
+        el("span", { class: "bolinha", style: `background: ${cor.get(l.celula)}` }),
+        el("strong", {}, nomeDaCelula(l.celula)),
+        el("span", {}, txt.porCem(txt.numero(l.real))),
+        el("span", { class: "vezes" }, txt.contouPorCem(txt.numero(l.contado))))))) : null,
     r.trocas.length ? el("section", { class: "cartao" },
       el("h2", {}, txt.trocas),
       el("ul", { class: "trocas" }, r.trocas.map((t) => el("li", {},
@@ -1208,31 +1475,209 @@ function resultadoDaContagem(r, celulas, tipos) {
         el("figcaption", {},
           el("strong", {}, nomeDaCelula(i.real)),
           el("span", {}, i.contou ? txt.voceContou(nomeDaCelula(i.contou)) : txt.passouSemContar)))))) : null,
-    el("div", { class: "acoes" },
-      el("button", { class: "primario grande", onclick: () => telaRodadaContagem().catch(mostrarErro) }, txt.contarDeNovo),
-      el("button", { class: "grande", onclick: () => telaContagem().catch(mostrarErro) }, txt.mudarOpcoes)));
+    doHistorico
+      ? el("div", { class: "acoes" }, el("a", { class: "botao primario grande", href: "#historico" }, `← ${txt.historico}`))
+      : el("div", { class: "acoes" },
+        el("button", { class: "primario grande", onclick: () => ir("#rodada") }, txt.contarDeNovo),
+        el("button", { class: "grande", onclick: () => ir("#") }, txt.mudarOpcoes),
+        el("a", { class: "botao grande", href: "#historico" }, icone("historico"), txt.verHistorico)));
   window.scrollTo(0, 0);
 }
 
 // ══════════════════════════════════════════════════════════
-// ROTEADOR SIMPLES
+// HISTÓRICO
 // ══════════════════════════════════════════════════════════
+// Cada contagem terminada (ou abandonada no meio) entra no fim da lista e não sai mais: o contador não tem
+// como editar nem apagar. Cada registro leva o SHA-256 do anterior, então mexer num registro à mão (pelo
+// DevTools) ou tirar um do meio aparece como "alterada". Quem refaz os hashes de propósito não é pego:
+// para isso, só guardando num servidor.
 
-function ir(rota) {
+const CHAVE_HISTORICO = "contadordif.historico";
+const CHAVE_ANDAMENTO = "contadordif.andamento";
+
+function novoId() {
+  return crypto.randomUUID ? crypto.randomUUID() : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function lerHistorico() {
+  try {
+    const lista = JSON.parse(localStorage.getItem(CHAVE_HISTORICO));
+    return Array.isArray(lista) ? lista : [];
+  } catch { return []; }
+}
+
+function esquecerAndamento() {
+  try { localStorage.removeItem(CHAVE_ANDAMENTO); } catch {}
+}
+
+async function hashDoRegistro(r) {
+  const texto = JSON.stringify([r.v, r.id, r.inicio, r.fim, r.estado, r.n, r.ritmo, r.teclas, r.a_parte, r.itens, r.anterior]);
+  const bytes = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(texto));
+  return [...new Uint8Array(bytes)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+// itens: [código da imagem, índice da célula real, índice da tecla apertada ou -1] de cada célula que passou
+function registroDe(andamento, respostas, estado) {
+  return {
+    v: 1, id: andamento.id, inicio: andamento.inicio, fim: new Date().toISOString(), estado,
+    n: andamento.codigos.length, ritmo: andamento.ritmo, teclas: andamento.teclas, a_parte: andamento.a_parte,
+    itens: respostas.map((contou, i) => [andamento.codigos[i], andamento.reais[i], contou]),
+  };
+}
+
+async function guardarNoHistorico(registro) {
+  const lista = lerHistorico();
+  registro.anterior = lista.length ? lista[lista.length - 1].hash : "";
+  registro.hash = await hashDoRegistro(registro);
+  localStorage.setItem(CHAVE_HISTORICO, JSON.stringify([...lista, registro]));
+  return registro;
+}
+
+// A página fechou no meio de uma rodada: o que foi contado entra como interrompida
+async function guardarRodadaInterrompida() {
+  let andamento = null;
+  try { andamento = JSON.parse(localStorage.getItem(CHAVE_ANDAMENTO)); } catch {}
+  if (!andamento) return;
+  try {
+    if (andamento.respostas?.length) await guardarNoHistorico(registroDe(andamento, andamento.respostas, "interrompida"));
+  } finally {
+    esquecerAndamento();
+  }
+}
+
+// O resultado sai sempre das respostas guardadas, nunca de um placar guardado
+function corrigirRegistro(reg) {
+  const banco = {
+    tipos: reg.teclas.map((nome) => ({ nome, a_parte: reg.a_parte.includes(nome) })),
+    por_codigo: Object.fromEntries(reg.itens.map(([codigo, real]) => [codigo, reg.teclas[real]])),
+  };
+  return corrigirContagemLocal(banco, reg.itens.map(([codigo, , contou]) => ({ codigo, contou: contou < 0 ? null : reg.teclas[contou] })));
+}
+
+// Para cada registro, o que há de errado: "alterado" (hash ou encadeamento não batem) e "banco"
+// (a célula real de alguma imagem não é a do banco de imagens atual)
+async function verificarHistorico(lista, banco) {
+  const problemas = [];
+  let anterior = "";
+  for (const reg of lista) {
+    const p = new Set();
+    try {
+      if (reg.anterior !== anterior || reg.hash !== await hashDoRegistro(reg)) p.add("alterado");
+      if (reg.itens.some(([codigo, real]) => banco.por_codigo[codigo] && banco.por_codigo[codigo] !== reg.teclas[real])) p.add("banco");
+    } catch { p.add("alterado"); }
+    problemas.push(p);
+    anterior = reg?.hash;
+  }
+  return problemas;
+}
+
+function quandoFoi(iso) {
+  return new Date(iso).toLocaleString(txt.local, { dateStyle: "short", timeStyle: "short" });
+}
+
+function urlsDoRegistro(reg, banco) {
+  const ext = new Map(banco.tipos.map((t) => [t.nome, t.ext]));
+  return reg.itens.map(([codigo, real]) => ({ codigo, url: `celulas/${codigo}${ext.get(reg.teclas[real]) || ".jpg"}` }));
+}
+
+// ── tela: a lista ─────────────────────────────────────────
+async function telaHistorico() {
+  const banco = await carregarBanco();
+  const opcoes = opcoesDaContagem();
+  prepararIdioma(opcoes, banco.tipos);
+  const lista = lerHistorico();
+  const problemas = await verificarHistorico(lista, banco);
+  const trocarIdioma = (idioma) => { guardarOpcoes({ ...opcoesDaContagem(), idioma }); telaHistorico().catch(mostrarErro); };
+
+  const linhas = [];
+  const notasCompletas = [];
+  lista.forEach((reg, i) => {
+    let resumo = null;
+    try { resumo = corrigirRegistro(reg); } catch { problemas[i].add("alterado"); }
+    const alterado = problemas[i].has("alterado");
+    const nota = resumo ? pct(resumo.certas, resumo.total) : null;
+    if (reg.estado === "completa" && !alterado && nota !== null) notasCompletas.push(nota);
+    let quando = txt.ilegivel, detalhe = "";
+    try {
+      quando = quandoFoi(reg.fim);
+      const ritmo = txt.ritmos[reg.ritmo]?.[0] || reg.ritmo;
+      detalhe = reg.estado === "completa" ? txt.linhaCompleta(inteiro(reg.n), ritmo) : txt.linhaParcial(inteiro(reg.itens.length), inteiro(reg.n));
+    } catch {}
+    linhas.push(el("li", {}, el("a", { href: `#historico/${encodeURIComponent(reg?.id ?? "")}` },
+      el("span", { class: "historico-quando" }, quando),
+      el("span", { class: "historico-detalhe" }, detalhe),
+      txt.estados[reg?.estado] ? el("span", { class: "selo" }, txt.estados[reg.estado]) : null,
+      alterado ? el("span", { class: "selo alterado" }, txt.alterada) : null,
+      el("span", { class: `historico-nota ${nota === null ? "" : faixaDaNota(nota)}` }, nota === null ? "—" : `${nota}%`))));
+  });
+  linhas.reverse(); // a mais recente primeiro
+  const media = notasCompletas.length ? Math.round(notasCompletas.reduce((s, n) => s + n, 0) / notasCompletas.length) : null;
+
+  tela(
+    cabecalho(txt.historico, seletorDeIdioma(opcoes.idioma, trocarIdioma), { href: "#", texto: txt.contagem }),
+    problemas.some((p) => p.has("alterado")) ? el("p", { class: "cartao alerta" }, txt.historicoAlterado) : null,
+    el("section", { class: "cartao" },
+      el("p", { class: "suave pequeno" }, txt.historicoComo),
+      lista.length
+        ? [el("p", { style: "font-weight: 650" }, txt.resumoHistorico(lista.length, media)),
+          el("ul", { class: "lista-historico" }, linhas)]
+        : el("p", {}, txt.historicoVazio)));
+}
+
+// ── tela: uma contagem do histórico ───────────────────────
+async function telaContagemDoHistorico(id) {
+  const banco = await carregarBanco();
+  const opcoes = opcoesDaContagem();
+  prepararIdioma(opcoes, banco.tipos);
+  const lista = lerHistorico();
+  const i = lista.findIndex((reg) => reg?.id === id);
+  if (i < 0) {
+    tela(cabecalho(txt.historico, null, { href: "#historico", texto: txt.historico }),
+      el("p", { class: "cartao aviso" }, txt.naoEncontrada));
+    return;
+  }
+  const problemas = (await verificarHistorico(lista, banco))[i];
+  const reg = lista[i];
+  let r;
+  try { r = corrigirRegistro(reg); } catch {
+    tela(cabecalho(txt.historico, null, { href: "#historico", texto: txt.historico }),
+      el("p", { class: "cartao alerta" }, txt.registroAlterado));
+    return;
+  }
+  // As cores e os nomes seguem as teclas da época da contagem
+  const tipos = reg.teclas.map((nome) => banco.tipos.find((t) => t.nome === nome) || { nome });
+  resultadoDaContagem(r, urlsDoRegistro(reg, banco), tipos, { registro: reg, doHistorico: true, problemas });
+}
+
+// ══════════════════════════════════════════════════════════
+// ROTEADOR
+// ══════════════════════════════════════════════════════════
+// A tela segue o endereço (#, #rodada, #historico, #historico/<id>), então o voltar do navegador e os
+// links "← …" funcionam. ir() troca o endereço; se ele já é esse, redesenha a tela.
+
+function rotear() {
   if (aoSair) { aoSair(); aoSair = null; }
   app.classList.remove("largo");
-  if (rota === "#rodada") {
-    telaRodadaContagem().catch(mostrarErro);
-  } else {
-    telaContagem().catch(mostrarErro);
-  }
+  const rota = decodeURIComponent(location.hash.slice(1));
+  let carregando;
+  if (rota === "rodada") carregando = telaRodadaContagem();
+  else if (rota === "historico") carregando = telaHistorico();
+  else if (rota.startsWith("historico/")) carregando = telaContagemDoHistorico(rota.slice("historico/".length));
+  else carregando = telaContagem();
+  carregando.catch(mostrarErro);
+}
+
+function ir(rota) {
+  if (location.hash === rota || (rota === "#" && !location.hash)) rotear();
+  else location.hash = rota;
 }
 
 function iniciarRodada() {
   ir("#rodada");
 }
 
-ir(location.hash.slice(1) === "rodada" ? "#rodada" : "#");
+window.addEventListener("hashchange", rotear);
+guardarRodadaInterrompida().catch((erro) => toast(txt.naoGuardou(erro.message))).finally(rotear);
 </script>
 </body>
 </html>

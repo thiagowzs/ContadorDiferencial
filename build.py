@@ -23,6 +23,7 @@ LIMITES_RODADA = [10, 1000]
 RAIZ = Path(__file__).parent
 PASTA_CELULAS = RAIZ / "celulas"
 CAMINHO_PADRAO = RAIZ / "banco" / "celulas.json"
+CAMINHO_PERFIS = RAIZ / "banco" / "perfis.json"
 DOCS = RAIZ / "docs"
 DOCS_CELULAS = DOCS / "celulas"
 
@@ -67,7 +68,25 @@ def carregar_padrao():
 
     referencia = bruto.get("referencia", {})
     ingles = bruto.get("ingles", {})
-    return {"teclas": teclas, "pastas": pastas, "referencia": referencia, "ingles": ingles}, []
+    a_parte = {c.strip() for c in bruto.get("a_parte", [])} & set(teclas)
+    return {"teclas": teclas, "pastas": pastas, "referencia": referencia, "ingles": ingles, "a_parte": a_parte}, []
+
+
+def carregar_perfis():
+    """Os perfis de doença do painel e o contato do convite. Sem o arquivo, o painel mostra só o sangue normal."""
+    if not CAMINHO_PERFIS.exists():
+        return [], None, []
+    try:
+        bruto = json.loads(CAMINHO_PERFIS.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as e:
+        return [], None, [f"perfis.json: JSON inválido: {e}"]
+    perfis = bruto.get("perfis") if isinstance(bruto, dict) else None
+    if not isinstance(perfis, list):
+        return [], None, ['perfis.json: "perfis" deve ser uma lista']
+    validos = [p for p in perfis if isinstance(p, dict) and isinstance(p.get("nome"), str) and p["nome"].strip()]
+    avisos = [f"perfis.json: {len(perfis) - len(validos)} perfil(is) sem nome ignorado(s)"] if len(validos) < len(perfis) else []
+    contato = bruto.get("contato") if isinstance(bruto.get("contato"), dict) else None
+    return validos, contato, avisos
 
 
 def classificar(partes, pastas):
@@ -120,18 +139,17 @@ def main():
     por_codigo = {}
     por_tipo = {}
 
+    # Toda tecla vai para o banco, mesmo sem imagem: ela aparece no pianinho
     for nome in padrao["teclas"]:
         imagens = grupos[nome]
-        if not imagens:
-            continue
         codigos = [codigo(rel) for rel in imagens]
-        ext = Path(imagens[0]).suffix.lower()
+        ext = Path(imagens[0]).suffix.lower() if imagens else None
         tipo = {
             "nome": nome,
             "imagens": len(imagens),
-            "exemplo": codigos[0],
             "referencia": padrao["referencia"].get(nome),
             "ingles": padrao["ingles"].get(nome),
+            "a_parte": nome in padrao["a_parte"],
             "codigos": codigos,
             "ext": ext,
         }
@@ -140,7 +158,7 @@ def main():
         for rel, cod in zip(imagens, codigos):
             por_codigo[cod] = nome
 
-    if not tipos:
+    if not por_codigo:
         print("Nenhuma imagem encontrada em celulas/.")
         return
 
@@ -155,8 +173,14 @@ def main():
                 shutil.copy2(PASTA_CELULAS / rel, destino)
                 copiadas += 1
 
+    perfis, contato, avisos_perfis = carregar_perfis()
+    for aviso in avisos_perfis:
+        print(f"AVISO: {aviso}")
+
     banco = {
         "tipos": tipos,
+        "perfis": perfis,
+        "contato": contato,
         "por_codigo": por_codigo,
         "resumo": motivos,
         "avisos": [],
@@ -166,9 +190,9 @@ def main():
     (DOCS / "banco.json").write_text(json.dumps(banco, ensure_ascii=False, indent=2), encoding="utf-8")
 
     total = sum(t["imagens"] for t in tipos)
-    print(f"OK: {len(tipos)} tipos, {total} imagens copiadas para docs/celulas/.")
+    print(f"OK: {len(tipos)} teclas, {sum(1 for t in tipos if t['imagens'])} com imagem, {total} imagens em docs/celulas/.")
     print(f"    {copiadas} novas, {motivos['fora']} de fora do padrão, {motivos['repetida']} repetidas ignoradas.")
-    print(f"    docs/banco.json gerado.")
+    print(f"    {len(perfis)} perfis de doença. docs/banco.json gerado.")
 
 
 if __name__ == "__main__":

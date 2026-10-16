@@ -1,14 +1,59 @@
 {
   "tipos": [
     {
+      "nome": "Blasto",
+      "imagens": 0,
+      "referencia": null,
+      "ingles": "Blast",
+      "a_parte": false,
+      "codigos": [],
+      "ext": null
+    },
+    {
+      "nome": "Promielócito",
+      "imagens": 0,
+      "referencia": null,
+      "ingles": "Promyelocyte",
+      "a_parte": false,
+      "codigos": [],
+      "ext": null
+    },
+    {
+      "nome": "Mielócito",
+      "imagens": 0,
+      "referencia": null,
+      "ingles": "Myelocyte",
+      "a_parte": false,
+      "codigos": [],
+      "ext": null
+    },
+    {
+      "nome": "Metamielócito",
+      "imagens": 0,
+      "referencia": null,
+      "ingles": "Metamyelocyte",
+      "a_parte": false,
+      "codigos": [],
+      "ext": null
+    },
+    {
+      "nome": "Bastonete",
+      "imagens": 0,
+      "referencia": null,
+      "ingles": "Band neutrophil",
+      "a_parte": false,
+      "codigos": [],
+      "ext": null
+    },
+    {
       "nome": "Segmentado",
       "imagens": 300,
-      "exemplo": "e4f774bc5140",
       "referencia": [
         40,
         75
       ],
       "ingles": "Segmented neutrophil",
+      "a_parte": false,
       "codigos": [
         "e4f774bc5140",
         "36a1231d7f34",
@@ -316,12 +361,12 @@
     {
       "nome": "Linfócito",
       "imagens": 300,
-      "exemplo": "2a15e7103e96",
       "referencia": [
         20,
         45
       ],
       "ingles": "Lymphocyte",
+      "a_parte": false,
       "codigos": [
         "2a15e7103e96",
         "0c53a9750895",
@@ -629,12 +674,12 @@
     {
       "nome": "Monócito",
       "imagens": 300,
-      "exemplo": "55bad90a4727",
       "referencia": [
         2,
         10
       ],
       "ingles": "Monocyte",
+      "a_parte": false,
       "codigos": [
         "55bad90a4727",
         "b099b7b55b49",
@@ -942,12 +987,12 @@
     {
       "nome": "Eosinófilo",
       "imagens": 300,
-      "exemplo": "b726fef32c35",
       "referencia": [
         1,
         6
       ],
       "ingles": "Eosinophil",
+      "a_parte": false,
       "codigos": [
         "b726fef32c35",
         "b80bd893438c",
@@ -1255,12 +1300,12 @@
     {
       "nome": "Basófilo",
       "imagens": 300,
-      "exemplo": "f90b85dc169a",
       "referencia": [
         0,
         1
       ],
       "ingles": "Basophil",
+      "a_parte": false,
       "codigos": [
         "f90b85dc169a",
         "ce400921146c",
@@ -1564,8 +1609,165 @@
         "e8d2b68398dc"
       ],
       "ext": ".jpg"
+    },
+    {
+      "nome": "Linfócito reativo",
+      "imagens": 0,
+      "referencia": null,
+      "ingles": "Reactive lymphocyte",
+      "a_parte": false,
+      "codigos": [],
+      "ext": null
+    },
+    {
+      "nome": "Linfócito anômalo",
+      "imagens": 0,
+      "referencia": null,
+      "ingles": "Abnormal lymphocyte",
+      "a_parte": false,
+      "codigos": [],
+      "ext": null
+    },
+    {
+      "nome": "Outras células",
+      "imagens": 0,
+      "referencia": null,
+      "ingles": "Other cells",
+      "a_parte": false,
+      "codigos": [],
+      "ext": null
+    },
+    {
+      "nome": "Eritroblasto",
+      "imagens": 0,
+      "referencia": null,
+      "ingles": "Erythroblast",
+      "a_parte": true,
+      "codigos": [],
+      "ext": null
     }
   ],
+  "perfis": [
+    {
+      "nome": "Crioaglutininas",
+      "ingles": "Cold agglutinins"
+    },
+    {
+      "nome": "Cristais de hemoglobina C",
+      "ingles": "Hemoglobin C crystals"
+    },
+    {
+      "nome": "Dengue",
+      "ingles": "Dengue"
+    },
+    {
+      "nome": "Doença falciforme",
+      "ingles": "Sickle cell disease"
+    },
+    {
+      "nome": "Eliptocitose hereditária",
+      "ingles": "Hereditary elliptocytosis"
+    },
+    {
+      "nome": "Esferocitose hereditária",
+      "ingles": "Hereditary spherocytosis"
+    },
+    {
+      "nome": "Linfoma de Burkitt",
+      "ingles": "Burkitt lymphoma"
+    },
+    {
+      "nome": "Linfoma de células T do adulto",
+      "ingles": "Adult T-cell leukemia/lymphoma"
+    },
+    {
+      "nome": "Linfoma de zona marginal",
+      "ingles": "Marginal zone lymphoma"
+    },
+    {
+      "nome": "Linfoma do manto",
+      "ingles": "Mantle cell lymphoma"
+    },
+    {
+      "nome": "Linfoma folicular",
+      "ingles": "Follicular lymphoma"
+    },
+    {
+      "nome": "LLA",
+      "ingles": "ALL",
+      "completo": "Leucemia linfoblástica aguda",
+      "completo_ingles": "Acute lymphoblastic leukemia"
+    },
+    {
+      "nome": "LLC",
+      "ingles": "CLL",
+      "completo": "Leucemia linfocítica crônica",
+      "completo_ingles": "Chronic lymphocytic leukemia"
+    },
+    {
+      "nome": "LMA",
+      "ingles": "AML",
+      "completo": "Leucemia mieloide aguda",
+      "completo_ingles": "Acute myeloid leukemia"
+    },
+    {
+      "nome": "LMC",
+      "ingles": "CML",
+      "completo": "Leucemia mieloide crônica",
+      "completo_ingles": "Chronic myeloid leukemia"
+    },
+    {
+      "nome": "LPA hipergranular",
+      "ingles": "Hypergranular APL",
+      "completo": "Leucemia promielocítica aguda",
+      "completo_ingles": "Acute promyelocytic leukemia"
+    },
+    {
+      "nome": "LPA hipogranular",
+      "ingles": "Hypogranular APL",
+      "completo": "Leucemia promielocítica aguda",
+      "completo_ingles": "Acute promyelocytic leukemia"
+    },
+    {
+      "nome": "Mieloma múltiplo",
+      "ingles": "Multiple myeloma"
+    },
+    {
+      "nome": "Mononucleose",
+      "ingles": "Infectious mononucleosis"
+    },
+    {
+      "nome": "Piropoiquilocitose",
+      "ingles": "Pyropoikilocytosis"
+    },
+    {
+      "nome": "Pseudotrombocitopenia",
+      "ingles": "Pseudothrombocytopenia"
+    },
+    {
+      "nome": "Reação leucemoide",
+      "ingles": "Leukemoid reaction"
+    },
+    {
+      "nome": "Satelitismo plaquetário",
+      "ingles": "Platelet satellitism"
+    },
+    {
+      "nome": "Sepse",
+      "ingles": "Sepsis"
+    },
+    {
+      "nome": "Síndrome de Sézary",
+      "ingles": "Sézary syndrome"
+    },
+    {
+      "nome": "Tricoleucemia",
+      "ingles": "Hairy cell leukemia"
+    }
+  ],
+  "contato": {
+    "email": "thi.gomes.santos2@gmail.com"
+  },
   "por_codigo": {
     "e4f774bc5140": "Segmentado",
     "36a1231d7f34": "Segmentado",

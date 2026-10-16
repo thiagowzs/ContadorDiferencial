@@ -1,0 +1,38 @@
+{
+  "$comment": [
+    "Os perfis de doença do painel ao lado das opções. Cada perfil vai dizer que células aparecem na rodada",
+    "e em que proporção; por enquanto só os nomes. Um perfil sem \"celulas\" aparece como lâmina em branco",
+    "(em preparação). O painel ordena pelo nome, então a ordem aqui não importa.",
+    "\"ingles\": o nome com o contador em inglês. \"completo\" e \"completo_ingles\": o nome por extenso, para as siglas.",
+    "\"contato\": o e-mail que aparece no convite das lâminas em branco, para quem quer mandar fotos ou casos."
+  ],
+  "contato": { "email": "thi.gomes.santos2@gmail.com" },
+  "perfis": [
+    { "nome": "Crioaglutininas", "ingles": "Cold agglutinins" },
+    { "nome": "Cristais de hemoglobina C", "ingles": "Hemoglobin C crystals" },
+    { "nome": "Dengue", "ingles": "Dengue" },
+    { "nome": "Doença falciforme", "ingles": "Sickle cell disease" },
+    { "nome": "Eliptocitose hereditária", "ingles": "Hereditary elliptocytosis" },
+    { "nome": "Esferocitose hereditária", "ingles": "Hereditary spherocytosis" },
+    { "nome": "Linfoma de Burkitt", "ingles": "Burkitt lymphoma" },
+    { "nome": "Linfoma de células T do adulto", "ingles": "Adult T-cell leukemia/lymphoma" },
+    { "nome": "Linfoma de zona marginal", "ingles": "Marginal zone lymphoma" },
+    { "nome": "Linfoma do manto", "ingles": "Mantle cell lymphoma" },
+    { "nome": "Linfoma folicular", "ingles": "Follicular lymphoma" },
+    { "nome": "LLA", "ingles": "ALL", "completo": "Leucemia linfoblástica aguda", "completo_ingles": "Acute lymphoblastic leukemia" },
+    { "nome": "LLC", "ingles": "CLL", "completo": "Leucemia linfocítica crônica", "completo_ingles": "Chronic lymphocytic leukemia" },
+    { "nome": "LMA", "ingles": "AML", "completo": "Leucemia mieloide aguda", "completo_ingles": "Acute myeloid leukemia" },
+    { "nome": "LMC", "ingles": "CML", "completo": "Leucemia mieloide crônica", "completo_ingles": "Chronic myeloid leukemia" },
+    { "nome": "LPA hipergranular", "ingles": "Hypergranular APL", "completo": "Leucemia promielocítica aguda", "completo_ingles": "Acute promyelocytic leukemia" },
+    { "nome": "LPA hipogranular", "ingles": "Hypogranular APL", "completo": "Leucemia promielocítica aguda", "completo_ingles": "Acute promyelocytic leukemia" },
+    { "nome": "Mieloma múltiplo", "ingles": "Multiple myeloma" },
+    { "nome": "Mononucleose", "ingles": "Infectious mononucleosis" },
+    { "nome": "Piropoiquilocitose", "ingles": "Pyropoikilocytosis" },
+    { "nome": "Pseudotrombocitopenia", "ingles": "Pseudothrombocytopenia" },
+    { "nome": "Reação leucemoide", "ingles": "Leukemoid reaction" },
+    { "nome": "Satelitismo plaquetário", "ingles": "Platelet satellitism" },
+    { "nome": "Sepse", "ingles": "Sepsis" },
+    { "nome": "Síndrome de Sézary", "ingles": "Sézary syndrome" },
+    { "nome": "Tricoleucemia", "ingles": "Hairy cell leukemia" }
+  ]
+}
