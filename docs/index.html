@@ -452,6 +452,8 @@ button.lamina[aria-expanded="true"] { border-color: var(--eosina); box-shadow: 0
 /* ── rodapé ────────────────────────────────────────────── */
 .rodape { display: flex; justify-content: center; align-items: center; gap: 6px; padding: 0 16px 28px; color: var(--suave); font-size: .86rem; }
 .rodape:empty { display: none; }
+.rodape { flex-wrap: wrap; }
+.rodape-credito { flex-basis: 100%; text-align: center; font-size: .78rem; color: var(--suave); }
 .rodape-icone { display: inline-grid; place-items: center; width: 38px; height: 38px; border-radius: 8px; color: var(--suave); }
 .rodape-icone:hover { background: var(--superficie-2); color: var(--texto); }
 .rodape-icone svg { width: 22px; height: 22px; }
@@ -905,6 +907,7 @@ const TEXTOS = {
     site: "Site",
     linkedinDe: (n) => `LinkedIn de ${n}`,
     siteDe: (n) => `Site de ${n}`,
+    creditoImagens: "Imagens: do autor, de colegas de laboratório e de Acevedo et al., 2020",
     perfis: "Perfis de doença",
     sangueNormal: "Sangue normal",
     sangueNormalDetalhe: (n) => `em uso, ${n} células`,
@@ -1021,6 +1024,7 @@ const TEXTOS = {
     site: "Website",
     linkedinDe: (n) => `${n} on LinkedIn`,
     siteDe: (n) => `${n}'s website`,
+    creditoImagens: "Images: the author, fellow lab professionals and Acevedo et al., 2020",
     perfis: "Disease profiles",
     sangueNormal: "Normal blood",
     sangueNormalDetalhe: (n) => `in use, ${n} cells`,
@@ -1101,6 +1105,7 @@ function montarRodape(banco) {
     marcaAtomo(),
     c.linkedin ? externo(c.linkedin, txt.linkedinDe(c.nome), logoLinkedin()) : null,
     c.site ? externo(c.site, txt.siteDe(c.nome), icone("site")) : null,
+    el("a", { class: "rodape-credito", href: "https://doi.org/10.17632/snkd93bnjr.1", target: "_blank", rel: "noopener" }, txt.creditoImagens),
   ].filter(Boolean));
 }
 
